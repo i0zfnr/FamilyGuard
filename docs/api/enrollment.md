@@ -1,0 +1,7 @@
+# Enrollment protocol prototype
+
+Enrollment redemption is disabled by default. The backend tests enable it in an isolated database. Do not enable it for real devices yet: an experimental Android agent exists but has not been verified on an actual device, and credential recovery is not implemented. The `owner_approved` request field is a client assertion, not server-verifiable evidence of consent.
+
+An authenticated dashboard account may create a five-minute challenge. In the prototype, the device signs UTF-8 bytes `challenge_id:challenge_token` using RSA (2048–4096 bits) with SHA-256 and sends the PEM public key, base64 signature, challenge fields, platform, device name, and explicit approval flag to `POST /api/v1/devices/enroll`. Challenge consumption and device/token creation are transactional. The server stores only hashes of the challenge and opaque device token. A token expires after 30 days; no rotation is implemented. The token can call only `POST /api/v1/agent/heartbeat` and cannot authenticate as an account. The account owner can revoke the device and its tokens.
+
+Use HTTPS for all non-local traffic. QR transfer, credential rotation, audit logging, recovery, key rotation, and real-device end-to-end testing are outstanding. The Android prototype includes a consent interface and protected storage, but neither has been verified on hardware. No secure real-device enrollment is claimed.

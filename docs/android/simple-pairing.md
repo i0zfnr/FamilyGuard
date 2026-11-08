@@ -1,0 +1,7 @@
+# Simple phone-to-phone pairing
+
+Target experience: install FamilyGuard on both phones. The grandfather opens the app and taps Show pairing code. The administrator signs in on their own phone, taps Add device, and scans that code. The grandfather sees the administrator's identity and explicitly approves or declines. Both phones then show whether pairing succeeded. The code is short-lived and single-use; pairing is not complete until the grandfather approves.
+
+This is a design target, not implemented functionality. The present API creates a challenge on the administrator side and the Android prototype accepts manual challenge entry. It cannot provide the requested scan flow. A safe implementation needs a device-originated pending pairing, a QR scanner on the administrator phone, authenticated linking of the scanned request, a visible final approval on the target, proof of possession of the target's protected key, expiry and replay protection, and device credential issuance only after approval. It also needs a reachable HTTPS server and tests on both devices. The target must be able to cancel or revoke access.
+
+Pairing alone cannot grant Android screen-capture consent permanently. Android may require the user to approve screen sharing for a session and show system indicators. Location and notification permissions also remain subject to user approval and OS restrictions. No remote-control or tracking capability should be implied by a successful scan.

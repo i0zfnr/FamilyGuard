@@ -1,0 +1,10 @@
+**/node_modules/
+**/vendor/
+**/.env
+**/dist/
+**/.phpunit.cache/
+**/database/*.sqlite
+
+**/.gradle/
+**/build/
+**/local.properties
