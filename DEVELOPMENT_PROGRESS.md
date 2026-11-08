@@ -60,3 +60,9 @@ Android validation: `assembleDebug` and two server-address unit tests passed. `l
 ## Requested pairing experience
 
 The requested flow is for the administrator's phone to scan a short-lived QR code displayed by the grandfather's phone, followed by the grandfather's explicit approval. This reverses the existing administrator-originated prototype and is not implemented. See docs/android/simple-pairing.md. No devices were enrolled.
+
+## Android account sign-in and deployment discovery (2026-11-08)
+
+- Added a native Android account sign-in screen that uses the existing Laravel session and CSRF endpoints over HTTPS, keeps its session in memory, and can retrieve the first page of owner-scoped devices. This does not grant administrator privileges or implement QR scanning, and the account session is not persistent across activity recreation.
+- `assembleDebug` and existing Android unit tests passed. The sign-in flow has not been tested against an HTTPS server or on a real phone.
+- Ryaze offers Laravel deployments from Git or ZIP. No Git remote, production configuration, provisioned database, or deployment has been configured. The web/API prototype is not production-ready; public registration, MFA, QR pairing, and device safety require further work.

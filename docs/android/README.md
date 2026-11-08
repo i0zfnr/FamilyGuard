@@ -14,3 +14,5 @@ The debug APK is at `app/build/outputs/apk/debug/app-debug.apk`. This is not a p
 The server's `owner_approved` flag is a client assertion and cannot prove who used the app; do not deploy this prototype publicly. There is no location, ring, screen capture, remote control, background heartbeat, accessibility service or foreground service. No Android device was connected during this build, so enrollment, Keystore persistence and telemetry are not yet verified on hardware.
 
 Platform references: [Android Keystore](https://developer.android.com/privacy-and-security/keystore) and [Android network security configuration](https://developer.android.com/privacy-and-security/security-config).
+
+The Android prototype also offers account sign-in and a first-page device list over HTTPS. Its session is held in memory and does not persist after activity recreation. This has not been tested on a physical phone or against a live HTTPS server. QR scanning and the requested device-originated pairing workflow are not implemented.

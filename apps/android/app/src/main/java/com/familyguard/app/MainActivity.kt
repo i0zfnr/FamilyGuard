@@ -1,5 +1,6 @@
 package com.familyguard.app
 
+import android.content.Intent
 import android.os.BatteryManager
 import android.os.Build
 import android.os.Bundle
@@ -46,6 +47,7 @@ class MainActivity : ComponentActivity() {
                 Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Text("FamilyGuard", style = MaterialTheme.typography.headlineMedium)
                     Text("Device management with your permission")
+                    OutlinedButton(enabled = !busy, onClick = { startActivity(Intent(this@MainActivity, AdminActivity::class.java)) }) { Text("Sign in to manage devices") }
                     if (!paired) {
                         Text("Enrollment is experimental and disabled on the server by default. Only continue if you trust the administrator and server.")
                         OutlinedTextField(server, { server = it }, label = { Text("HTTPS server address") }, singleLine = true, modifier = Modifier.fillMaxWidth())
