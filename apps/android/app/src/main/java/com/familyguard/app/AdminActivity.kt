@@ -64,15 +64,15 @@ class AdminActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MaterialTheme {
+            XennGuardTheme {
                 var server by remember { mutableStateOf("") }; var email by remember { mutableStateOf("") }
                 var password by remember { mutableStateOf("") }; var name by remember { mutableStateOf("") }
                 var session by remember { mutableStateOf<AdminSession?>(null) }
                 var devices by remember { mutableStateOf<List<String>?>(null) }
                 var busy by remember { mutableStateOf(false) }; var error by remember { mutableStateOf("") }
                 val scope = rememberCoroutineScope()
-                Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("XennGuard", style = MaterialTheme.typography.headlineMedium)
+                Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).navigationBarsPadding().statusBarsPadding().padding(horizontal = 24.dp, vertical = 20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    XennHeader("DEVICE CARE, MADE SIMPLE")
                     if (session == null) {
                         Text("Sign in to view your devices.")
                         OutlinedTextField(server, { server = it }, label = { Text("HTTPS server address") }, modifier = Modifier.fillMaxWidth())

@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val store = DeviceStore(this)
         setContent {
-            MaterialTheme {
+            XennGuardTheme {
                 var server by remember { mutableStateOf("") }
                 var challengeId by remember { mutableStateOf("") }
                 var challengeToken by remember { mutableStateOf("") }
@@ -44,8 +44,8 @@ class MainActivity : ComponentActivity() {
                         busy = false
                     }
                 }
-                Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("XennGuard", style = MaterialTheme.typography.headlineMedium)
+                Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).navigationBarsPadding().statusBarsPadding().padding(horizontal = 24.dp, vertical = 20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    XennHeader("DEVICE CARE, MADE SIMPLE")
                     Text("Device management with your permission")
                     OutlinedButton(enabled = !busy, onClick = { startActivity(Intent(this@MainActivity, AdminActivity::class.java)) }) { Text("Sign in to manage devices") }
                     if (!paired) {

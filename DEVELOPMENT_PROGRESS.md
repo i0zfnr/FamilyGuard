@@ -71,3 +71,11 @@ The requested flow is for the administrator's phone to scan a short-lived QR cod
 
 - Renamed the visible Android and web app branding to XennGuard and used the user-supplied image for the launcher icon, web brand and favicon. Internal Android package and credential identifiers remain unchanged to preserve app identity.
 Android debug build and unit tests, plus web build and lint, passed after the branding change. No launcher or device UI was tested on hardware.
+
+## Interface refresh
+
+- Redesigned web sign-in, registration, device dashboard and responsive layouts using the supplied XennGuard artwork. Account and device actions continue to use existing APIs; unavailable features remain labeled.
+- Applied a matching Compose color theme, branded header and system-bar spacing to the Android prototype.
+- Web production build and lint passed. Desktop and mobile sign-in layouts were visually inspected. Android debug build and unit tests passed; Android visuals were not inspected on hardware. Internationalization, real-device testing and production readiness remain outstanding.
+
+- Softened the supplied artwork edges on the sign-in panel to remove the visible rectangular boundary. Web build and lint passed; no browser screenshot was verified for this change.
