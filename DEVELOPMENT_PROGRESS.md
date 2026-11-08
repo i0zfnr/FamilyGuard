@@ -123,3 +123,20 @@ Android debug build and unit tests, plus web build and lint, passed after the br
 - FigCraft Prototype: Updated `prototypes/dashboard.figcraft` with 1440x900 editorial frame (`id: 147`, 51 children) and captured artifact screenshot `xennguard_dashboard_redesign_v2.png`.
 - Full Verification: 100% test pass rate on Vitest suite (32/32 tests passed across 5 test files). Production build cleanly compiled with Vite 8 (`index-DFVleFNx.js`, `index-BtmVPA4y.css`) and synced to `public/assets/` and `public/index.html`.
 - Running Servers: Vite HMR active on `http://127.0.0.1:5173`, Laravel API/SPA active on `http://127.0.0.1:8001`.
+
+## Docked Obsidian Sidebar & Complete Navigation Functionalization (2026-11-09)
+
+- Replaced the inner floating sidebar card with a docked vertical sidebar architecture docked to the left edge of the viewport (`width: 260px`, `height: 100vh`, background `#0A0E0C` obsidian), perfectly matching the user reference pattern.
+- Sidebar Architecture:
+  - Header: `xenn.` brand logo box with dove emblem and `YOUR LITTLE UNIVERSE` sub-label.
+  - Primary Navigation: `Devices`, `Activity`, `Security` with active outline pill container and status dot.
+  - Fleet Quick Filters: `All Devices`, `Android Fleet`, `Windows Workstations`, and `+ Register device` shortcut.
+  - Bottom Pinned Area: `Settings` with `WEB BETA` tag, server connectivity indicator, and user account pill.
+- View Functionalization:
+  - `Devices` (`DashboardPage.tsx`): Full fleet management dashboard with responsive stat platters, platform filter buttons, search input, device card feed, and telemetry inspect buttons.
+  - `Activity` (`ActivityPage.tsx`): Real-time interactive audit & security logs table with event type filtering (`ALL`, `AUTH`, `TELEMETRY`, `CHALLENGE`, `CONSENT`, `POLICY`), cryptographic SHA-256 hashes, search, and JSON export.
+  - `Security` (`SecurityPage.tsx`): Hardware key posture cards (`SHA256withRSA`), mutual consent verification status, single-use challenge lifetimes, and enrolled device key fingerprint registry with revocation.
+  - `Settings` (`SettingsPage.tsx`): Master account identity details, QR proximity policy toggles, telemetry retention window selector (30 days default), and session termination.
+- FigCraft Prototype: Updated `prototypes/dashboard.figcraft` with docked obsidian sidebar and porcelain feed (70 layers, root frame `id: 199`, 1440x900) and generated screenshot artifact `xennguard_docked_sidebar_v3.png`.
+- Automated Verification: 100% test pass rate on Vitest suite (32/32 tests passed across 5 test suites). Production build compiled cleanly via `tsc -b && vite build` (`index-Bvsu75IW.js`, `index-BtmVPA4y.css`) and synced to `public/assets/` and `public/index.html`.
+

@@ -1,12 +1,8 @@
 import { useState, useMemo } from 'react'
 import {
-  DeviceMobileCamera,
   MagnifyingGlass,
   Plus,
   ShieldPlus,
-  Sliders,
-  ActivityIcon as Activity,
-  LockKey,
 } from '@phosphor-icons/react'
 import { DeviceCard, StatPlatter, Button } from '../components'
 import type { User, Device, Telemetry } from '../types'
@@ -18,6 +14,8 @@ export interface DashboardPageProps {
   onInspectDevice: (device: Device) => void
   onRevokeDevice: (device: Device) => Promise<void>
   onPairDevice: () => void
+  platformFilter?: 'all' | 'android' | 'windows'
+  onPlatformFilterChange?: (filter: 'all' | 'android' | 'windows') => void
   busy?: boolean
 }
 
@@ -28,12 +26,20 @@ export function DashboardPage({
   onInspectDevice,
   onRevokeDevice,
   onPairDevice,
+  platformFilter: platformFilterProp,
+  onPlatformFilterChange,
   busy = false,
 }: DashboardPageProps) {
-  const [platformFilter, setPlatformFilter] = useState<'all' | 'android' | 'windows'>('all')
+  const [localFilter, setLocalFilter] = useState<'all' | 'android' | 'windows'>('all')
   const [searchQuery, setSearchQuery] = useState('')
-  const [activeSidebarNav, setActiveSidebarNav] = useState<'devices' | 'activity' | 'security' | 'settings'>('devices')
   const [now] = useState(() => Date.now())
+
+  const activeFilter = platformFilterProp ?? localFilter
+
+  const setFilter = (filter: 'all' | 'android' | 'windows') => {
+    setLocalFilter(filter)
+    if (onPlatformFilterChange) onPlatformFilterChange(filter)
+  }
 
   // Calculate metrics for StatPlatter
   const metrics = useMemo(() => {
@@ -66,7 +72,7 @@ export function DashboardPage({
   // Filtered devices list
   const filteredDevices = useMemo(() => {
     return devices.filter((device) => {
-      if (platformFilter !== 'all' && device.platform !== platformFilter) return false
+      if (activeFilter !== 'all' && device.platform !== activeFilter) return false
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase()
         return (
@@ -77,332 +83,192 @@ export function DashboardPage({
       }
       return true
     })
-  }, [devices, platformFilter, searchQuery])
+  }, [devices, activeFilter, searchQuery])
 
   return (
     <div
       className="dashboard-container"
       style={{
-        display: 'grid',
-        gridTemplateColumns: '240px minmax(0, 1fr)',
-        gap: '32px',
-        maxWidth: '1280px',
+        maxWidth: '1100px',
         margin: '0 auto',
-        padding: '108px 24px 48px',
-        alignItems: 'start',
+        width: '100%',
       }}
     >
-      {/* Left Workspace Sidebar */}
-      <aside
-        className="workspace-sidebar"
+      {/* Top Header Row */}
+      <div
         style={{
-          background: '#FFFFFF',
-          border: '1px solid var(--color-surface-card-border)',
-          borderRadius: 'var(--radius-lg)',
-          padding: '18px 14px',
           display: 'flex',
-          flexDirection: 'column',
-          gap: '8px',
-          boxShadow: 'var(--shadow-card)',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          marginBottom: '24px',
+          gap: '20px',
+          flexWrap: 'wrap',
         }}
-        aria-label="Workspace Navigation"
       >
-        <div
-          style={{
-            fontSize: '10.5px',
-            fontWeight: 700,
-            color: 'var(--color-text-muted)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.12em',
-            padding: '4px 12px 10px',
-          }}
-        >
-          WORKSPACE
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setActiveSidebarNav('devices')}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            padding: '10px 14px',
-            borderRadius: 'var(--radius-md)',
-            fontSize: '13.5px',
-            fontWeight: 600,
-            border: 'none',
-            cursor: 'pointer',
-            textAlign: 'left',
-            background: activeSidebarNav === 'devices' ? '#1B3626' : 'transparent',
-            color: activeSidebarNav === 'devices' ? '#FFFFFF' : 'var(--color-text-secondary)',
-            transition: 'all var(--transition-fast)',
-          }}
-          aria-current={activeSidebarNav === 'devices' ? 'page' : undefined}
-        >
-          <DeviceMobileCamera size={18} weight="regular" aria-hidden="true" />
-          <span>Devices</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveSidebarNav('activity')}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            padding: '10px 14px',
-            borderRadius: 'var(--radius-md)',
-            fontSize: '13.5px',
-            fontWeight: 600,
-            border: 'none',
-            cursor: 'pointer',
-            textAlign: 'left',
-            background: activeSidebarNav === 'activity' ? '#1B3626' : 'transparent',
-            color: activeSidebarNav === 'activity' ? '#FFFFFF' : 'var(--color-text-secondary)',
-            transition: 'all var(--transition-fast)',
-          }}
-          aria-current={activeSidebarNav === 'activity' ? 'page' : undefined}
-        >
-          <Activity size={18} weight="regular" aria-hidden="true" />
-          <span>Activity</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveSidebarNav('security')}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            padding: '10px 14px',
-            borderRadius: 'var(--radius-md)',
-            fontSize: '13.5px',
-            fontWeight: 600,
-            border: 'none',
-            cursor: 'pointer',
-            textAlign: 'left',
-            background: activeSidebarNav === 'security' ? '#1B3626' : 'transparent',
-            color: activeSidebarNav === 'security' ? '#FFFFFF' : 'var(--color-text-secondary)',
-            transition: 'all var(--transition-fast)',
-          }}
-          aria-current={activeSidebarNav === 'security' ? 'page' : undefined}
-        >
-          <LockKey size={18} weight="regular" aria-hidden="true" />
-          <span>Security</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveSidebarNav('settings')}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            padding: '10px 14px',
-            borderRadius: 'var(--radius-md)',
-            fontSize: '13.5px',
-            fontWeight: 600,
-            border: 'none',
-            cursor: 'pointer',
-            textAlign: 'left',
-            background: activeSidebarNav === 'settings' ? '#1B3626' : 'transparent',
-            color: activeSidebarNav === 'settings' ? '#FFFFFF' : 'var(--color-text-secondary)',
-            transition: 'all var(--transition-fast)',
-          }}
-          aria-current={activeSidebarNav === 'settings' ? 'page' : undefined}
-        >
-          <Sliders size={18} weight="regular" aria-hidden="true" />
-          <span>Settings</span>
-        </button>
-      </aside>
-
-      {/* Main Content Area */}
-      <main style={{ minWidth: 0 }}>
-        {/* Top Header Row */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            justifyContent: 'space-between',
-            marginBottom: '24px',
-            gap: '20px',
-            flexWrap: 'wrap',
-          }}
-        >
-          <div>
-            <span
-              style={{
-                fontSize: '11px',
-                fontWeight: 700,
-                color: '#265C38',
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                display: 'block',
-                marginBottom: '6px',
-              }}
-            >
-              FAMILY DEVICE CARE / WORKSPACE OVERVIEW
-            </span>
-            <h1
-              style={{
-                fontSize: '32px',
-                fontWeight: 700,
-                color: 'var(--color-text-primary)',
-                letterSpacing: '-0.03em',
-                margin: '0 0 6px',
-              }}
-            >
-              Devices
-            </h1>
-            <p
-              style={{
-                fontSize: '14px',
-                color: 'var(--color-text-secondary)',
-                margin: 0,
-              }}
-            >
-              Manage your trusted devices (Good to see you, {user.name})
-            </p>
-          </div>
-
-          <Button
-            variant="primary"
-            icon={<Plus size={16} weight="bold" />}
-            onClick={onPairDevice}
-            disabled={busy}
-          >
-            Pair New Device
-          </Button>
-        </div>
-
-        {/* Metric Platter */}
-        <StatPlatter
-          total={metrics.total}
-          online={metrics.online}
-          alerts={metrics.alerts}
-        />
-
-        {/* Filter & Search Bar */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '16px',
-            marginBottom: '20px',
-            flexWrap: 'wrap',
-          }}
-        >
-          {/* Platform Tabs */}
-          <div
+        <div>
+          <span
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              background: '#EDF3EE',
-              padding: '4px',
+              fontSize: '11px',
+              fontWeight: 700,
+              color: '#265C38',
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              display: 'block',
+              marginBottom: '6px',
+            }}
+          >
+            FAMILY DEVICE CARE / WORKSPACE OVERVIEW
+          </span>
+          <h1
+            style={{
+              fontSize: '32px',
+              fontWeight: 700,
+              color: 'var(--color-text-primary)',
+              letterSpacing: '-0.03em',
+              margin: '0 0 6px',
+            }}
+          >
+            Devices
+          </h1>
+          <p
+            style={{
+              fontSize: '14px',
+              color: 'var(--color-text-secondary)',
+              margin: 0,
+            }}
+          >
+            Manage your trusted devices (Good to see you, {user.name})
+          </p>
+        </div>
+
+        <Button
+          variant="primary"
+          icon={<Plus size={16} weight="bold" />}
+          onClick={onPairDevice}
+          disabled={busy}
+        >
+          Pair New Device
+        </Button>
+      </div>
+
+      {/* Metric Platter */}
+      <StatPlatter
+        total={metrics.total}
+        online={metrics.online}
+        alerts={metrics.alerts}
+      />
+
+      {/* Filter & Search Bar */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '16px',
+          marginBottom: '20px',
+          flexWrap: 'wrap',
+        }}
+      >
+        {/* Platform Tabs */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            background: '#EDF3EE',
+            padding: '4px',
+            borderRadius: 'var(--radius-pill)',
+            border: '1px solid #DCE6DE',
+          }}
+        >
+          <button
+            type="button"
+            onClick={() => setFilter('all')}
+            style={{
+              border: 'none',
+              background: activeFilter === 'all' ? '#1B3626' : 'transparent',
+              color: activeFilter === 'all' ? '#FFFFFF' : 'var(--color-text-secondary)',
+              padding: '6px 16px',
               borderRadius: 'var(--radius-pill)',
-              border: '1px solid #DCE6DE',
+              fontSize: '13px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all var(--transition-fast)',
             }}
-            aria-label="Filter devices by platform"
           >
-            <button
-              type="button"
-              onClick={() => setPlatformFilter('all')}
-              style={{
-                border: 'none',
-                background: platformFilter === 'all' ? '#1B3626' : 'transparent',
-                color: platformFilter === 'all' ? '#FFFFFF' : 'var(--color-text-secondary)',
-                fontSize: '12.5px',
-                fontWeight: 600,
-                padding: '6px 14px',
-                borderRadius: 'var(--radius-pill)',
-                cursor: 'pointer',
-                transition: 'all var(--transition-fast)',
-              }}
-            >
-              All Devices
-            </button>
-            <button
-              type="button"
-              onClick={() => setPlatformFilter('android')}
-              style={{
-                border: 'none',
-                background: platformFilter === 'android' ? '#1B3626' : 'transparent',
-                color: platformFilter === 'android' ? '#FFFFFF' : 'var(--color-text-secondary)',
-                fontSize: '12.5px',
-                fontWeight: 600,
-                padding: '6px 14px',
-                borderRadius: 'var(--radius-pill)',
-                cursor: 'pointer',
-                transition: 'all var(--transition-fast)',
-              }}
-            >
-              Android
-            </button>
-            <button
-              type="button"
-              onClick={() => setPlatformFilter('windows')}
-              style={{
-                border: 'none',
-                background: platformFilter === 'windows' ? '#1B3626' : 'transparent',
-                color: platformFilter === 'windows' ? '#FFFFFF' : 'var(--color-text-secondary)',
-                fontSize: '12.5px',
-                fontWeight: 600,
-                padding: '6px 14px',
-                borderRadius: 'var(--radius-pill)',
-                cursor: 'pointer',
-                transition: 'all var(--transition-fast)',
-              }}
-            >
-              Windows
-            </button>
-          </div>
-
-          {/* Search Box */}
-          <div
+            All Devices
+          </button>
+          <button
+            type="button"
+            onClick={() => setFilter('android')}
             style={{
-              position: 'relative',
-              display: 'flex',
-              alignItems: 'center',
-              width: '100%',
-              maxWidth: '320px',
+              border: 'none',
+              background: activeFilter === 'android' ? '#1B3626' : 'transparent',
+              color: activeFilter === 'android' ? '#FFFFFF' : 'var(--color-text-secondary)',
+              padding: '6px 16px',
+              borderRadius: 'var(--radius-pill)',
+              fontSize: '13px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all var(--transition-fast)',
             }}
           >
-            <MagnifyingGlass
-              size={16}
-              weight="bold"
-              style={{
-                position: 'absolute',
-                left: '12px',
-                color: 'var(--color-text-muted)',
-                pointerEvents: 'none',
-              }}
-              aria-hidden="true"
-            />
-            <input
-              type="text"
-              className="form-input"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search devices by name, platform, or ID..."
-              style={{
-                paddingLeft: '36px',
-                paddingRight: '12px',
-                paddingTop: '8px',
-                paddingBottom: '8px',
-                fontSize: '13px',
-                borderRadius: 'var(--radius-pill)',
-                background: '#FFFFFF',
-              }}
-              aria-label="Search devices"
-            />
-          </div>
+            Android
+          </button>
+          <button
+            type="button"
+            onClick={() => setFilter('windows')}
+            style={{
+              border: 'none',
+              background: activeFilter === 'windows' ? '#1B3626' : 'transparent',
+              color: activeFilter === 'windows' ? '#FFFFFF' : 'var(--color-text-secondary)',
+              padding: '6px 16px',
+              borderRadius: 'var(--radius-pill)',
+              fontSize: '13px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all var(--transition-fast)',
+            }}
+          >
+            Windows
+          </button>
         </div>
 
-        {/* Devices List or Empty State */}
-        {filteredDevices.length > 0 ? (
+        {/* Search Bar */}
+        <div style={{ position: 'relative', minWidth: '240px' }}>
+          <MagnifyingGlass
+            size={16}
+            color="var(--color-text-muted)"
+            style={{
+              position: 'absolute',
+              left: '12px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+            }}
+            aria-hidden="true"
+          />
+          <input
+            type="search"
+            placeholder="Search devices..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '8px 14px 8px 36px',
+              borderRadius: 'var(--radius-pill)',
+              border: '1px solid var(--color-surface-input-border)',
+              fontSize: '13px',
+              background: '#FFFFFF',
+              color: 'var(--color-text-primary)',
+              outline: 'none',
+              transition: 'all var(--transition-fast)',
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Devices List or Empty State */}
+      {filteredDevices.length > 0 ? (
           <div role="feed" aria-label="Connected devices">
             {filteredDevices.map((device) => (
               <DeviceCard
@@ -473,14 +339,13 @@ export function DashboardPage({
               size="sm"
               onClick={() => {
                 setSearchQuery('')
-                setPlatformFilter('all')
+                setFilter('all')
               }}
             >
               Clear filters
             </Button>
           </div>
         )}
-      </main>
     </div>
   )
 }

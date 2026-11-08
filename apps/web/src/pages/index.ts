@@ -1,3 +1,6 @@
 export * from './AuthPage'
 export * from './DashboardPage'
 export * from './DeviceDetailPage'
+export * from './ActivityPage'
+export * from './SecurityPage'
+export * from './SettingsPage'

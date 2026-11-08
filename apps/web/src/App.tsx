@@ -1,17 +1,26 @@
 import { useEffect, useState, useCallback } from 'react'
-import { HeaderPlatter, EnrollmentModal } from './components'
-import { AuthPage, DashboardPage, DeviceDetailPage } from './pages'
+import { Sidebar, Button, EnrollmentModal } from './components'
+import {
+  AuthPage,
+  DashboardPage,
+  DeviceDetailPage,
+  ActivityPage,
+  SecurityPage,
+  SettingsPage,
+} from './pages'
 import { api, RequestError } from './services/api'
 import type { User, Device, Telemetry, EnrollmentChallenge } from './types'
 import {
-  Sliders,
-  ClipboardText,
+  Plus,
+  SignOut,
+  ActivityIcon as Activity,
 } from '@phosphor-icons/react'
 
 export function App() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'devices' | 'audit' | 'settings'>('devices')
+  const [activeTab, setActiveTab] = useState<'devices' | 'activity' | 'security' | 'settings' | 'audit'>('devices')
+  const [platformFilter, setPlatformFilter] = useState<'all' | 'android' | 'windows'>('all')
   const [selectedDevice, setSelectedDevice] = useState<Device | null>(null)
   const [devices, setDevices] = useState<Device[]>([])
   const [telemetryMap, setTelemetryMap] = useState<Record<string, Telemetry>>({})
@@ -187,230 +196,192 @@ export function App() {
     )
   }
 
+  const currentTab = activeTab === 'audit' ? 'activity' : activeTab
+
   return (
-    <div className="app-canvas" style={{ minHeight: '100vh', background: 'var(--color-canvas-bg)' }}>
-      {/* Floating Header Platter Navigation */}
-      <HeaderPlatter
+    <div
+      className="app-shell"
+      style={{
+        display: 'flex',
+        minHeight: '100vh',
+        background: 'var(--color-canvas-bg)',
+      }}
+    >
+      {/* 1. Left Docked Obsidian Sidebar (matching Image 3) */}
+      <Sidebar
         user={user}
-        activeTab={activeTab}
+        activeTab={currentTab}
         onTabChange={(tab) => {
           setActiveTab(tab)
           setSelectedDevice(null)
         }}
+        platformFilter={platformFilter}
+        onPlatformFilterChange={setPlatformFilter}
+        devices={devices}
         onPairDevice={handlePairDevice}
         onSignOut={handleSignOut}
         serverConnected={serverConnected}
         busy={busy}
       />
 
-      {/* Global Error Banner */}
-      {errorBanner && (
-        <div
-          role="alert"
+      {/* 2. Main Viewport Area (offset for 260px docked sidebar) */}
+      <div
+        className="app-main-viewport"
+        style={{
+          marginLeft: '260px',
+          flex: 1,
+          minWidth: 0,
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          background: 'var(--color-canvas-bg)',
+        }}
+      >
+        {/* Top Header Bar */}
+        <header
           style={{
-            maxWidth: '1280px',
-            margin: '96px auto 0',
-            padding: '12px 20px',
-            borderRadius: 'var(--radius-md)',
-            background: 'var(--color-status-critical-bg)',
-            border: '1px solid var(--color-status-critical-border)',
-            color: '#991B1B',
-            fontSize: '13px',
+            position: 'sticky',
+            top: 0,
+            zIndex: 40,
+            height: '64px',
+            padding: '0 32px',
+            background: 'rgba(247, 250, 247, 0.88)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            borderBottom: '1px solid #D7E3D9',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
           }}
+          role="banner"
         >
-          <span>{errorBanner}</span>
-          <button
-            type="button"
-            onClick={() => setErrorBanner(null)}
-            style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', fontWeight: 600 }}
-          >
-            Dismiss
-          </button>
-        </div>
-      )}
-
-      {/* Active Tab View */}
-      {selectedDevice ? (
-        <DeviceDetailPage
-          device={selectedDevice}
-          onBack={() => {
-            setSelectedDevice(null)
-            loadDevices()
-          }}
-          onDeviceUpdated={(updated) => {
-            setSelectedDevice(updated)
-            setDevices((prev) => prev.map((d) => (d.id === updated.id ? updated : d)))
-          }}
-        />
-      ) : activeTab === 'audit' ? (
-        <div className="content-wrapper" style={{ paddingTop: '108px' }}>
           <div
-            className="solid-card"
             style={{
-              padding: '36px',
-              maxWidth: '860px',
-              margin: '0 auto',
-              background: '#FFFFFF',
-              border: '1px solid var(--color-surface-card-border)',
-              borderRadius: 'var(--radius-xl)',
-              boxShadow: 'var(--shadow-card)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              fontSize: '13px',
+              fontWeight: 600,
+              color: 'var(--color-text-secondary)',
             }}
           >
-            <div
-              style={{
-                width: '48px',
-                height: '48px',
-                borderRadius: 'var(--radius-md)',
-                background: '#EAF2EB',
-                border: '1px solid #D3E3D6',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#275C37',
-                marginBottom: '16px',
-              }}
-              aria-hidden="true"
-            >
-              <ClipboardText size={24} weight="regular" />
-            </div>
-            <h2 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '6px', color: 'var(--color-text-primary)', letterSpacing: '-0.02em' }}>
-              Security Audit Logs
-            </h2>
-            <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', maxWidth: '520px', margin: '0 0 28px', lineHeight: 1.6 }}>
-              Cryptographically signed audit logs verifying token exchanges, challenge redemptions, and telemetry health synchronization.
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <div
-                style={{
-                  padding: '14px 18px',
-                  background: '#F7FAF7',
-                  borderRadius: 'var(--radius-md)',
-                  border: '1px solid #DCE6DE',
-                  fontSize: '13px',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                  <span style={{ color: '#1A6E40', fontWeight: 700 }}>AUTH_LOGIN_SUCCESS</span>
-                  <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>Active Session</span>
-                </div>
-                <div style={{ fontSize: '13px', color: 'var(--color-text-secondary)' }}>
-                  User session authenticated for <strong>{user.email}</strong> via secure web session guard.
-                </div>
-              </div>
-
-              <div
-                style={{
-                  padding: '14px 18px',
-                  background: '#F7FAF7',
-                  borderRadius: 'var(--radius-md)',
-                  border: '1px solid #DCE6DE',
-                  fontSize: '13px',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                  <span style={{ color: '#275C37', fontWeight: 700 }}>TENANT_POLICY_VERIFIED</span>
-                  <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>Owner-Scoped</span>
-                </div>
-                <div style={{ fontSize: '13px', color: 'var(--color-text-secondary)' }}>
-                  Strict server-side device ownership and cross-tenant isolation policy enforced on all endpoints.
-                </div>
-              </div>
-
-              <div
-                style={{
-                  padding: '14px 18px',
-                  background: '#F7FAF7',
-                  borderRadius: 'var(--radius-md)',
-                  border: '1px solid #DCE6DE',
-                  fontSize: '13px',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                  <span style={{ color: '#23527C', fontWeight: 700 }}>TELEMETRY_INGESTION_READY</span>
-                  <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>Encrypted</span>
-                </div>
-                <div style={{ fontSize: '13px', color: 'var(--color-text-secondary)' }}>
-                  Hardware token bearer challenge validation active. Retention automated to 30 days.
-                </div>
-              </div>
-            </div>
+            <span style={{ color: 'var(--color-text-muted)' }}>Workspace</span>
+            <span>/</span>
+            <span style={{ color: 'var(--color-text-primary)', textTransform: 'capitalize' }}>
+              {selectedDevice
+                ? `Device: ${selectedDevice.device_name}`
+                : currentTab}
+            </span>
           </div>
-        </div>
-      ) : activeTab === 'settings' ? (
-        <div className="content-wrapper" style={{ paddingTop: '108px' }}>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <div className="server-status-pill" title="Backend connection status">
+              <Activity size={14} weight="bold" className="status-dot pulse" aria-hidden="true" />
+              <span>{serverConnected ? 'Connected' : 'Connecting'}</span>
+            </div>
+
+            <div className="user-pill" title={`${user.name} (${user.email})`}>
+              <div className="user-avatar" aria-hidden="true">
+                {user.name.charAt(0).toUpperCase()}
+              </div>
+              <span>{user.name}</span>
+            </div>
+
+            <Button
+              variant="primary"
+              size="sm"
+              icon={<Plus size={14} weight="bold" />}
+              onClick={handlePairDevice}
+              disabled={busy}
+            >
+              Pair Device
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={<SignOut size={16} weight="bold" />}
+              onClick={handleSignOut}
+              disabled={busy}
+              title="Sign out of XennGuard"
+              aria-label="Sign out"
+            />
+          </div>
+        </header>
+
+        {/* Global Error Banner */}
+        {errorBanner && (
           <div
-            className="solid-card"
+            role="alert"
             style={{
-              padding: '36px',
-              maxWidth: '680px',
-              margin: '0 auto',
-              background: '#FFFFFF',
-              border: '1px solid var(--color-surface-card-border)',
-              borderRadius: 'var(--radius-xl)',
-              boxShadow: 'var(--shadow-card)',
+              margin: '16px 32px 0',
+              padding: '12px 20px',
+              borderRadius: 'var(--radius-md)',
+              background: 'var(--color-status-critical-bg)',
+              border: '1px solid var(--color-status-critical-border)',
+              color: '#991B1B',
+              fontSize: '13px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
             }}
           >
-            <div
-              style={{
-                width: '48px',
-                height: '48px',
-                borderRadius: 'var(--radius-md)',
-                background: '#EAF2EB',
-                border: '1px solid #D3E3D6',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#275C37',
-                marginBottom: '16px',
-              }}
-              aria-hidden="true"
+            <span>{errorBanner}</span>
+            <button
+              type="button"
+              onClick={() => setErrorBanner(null)}
+              style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', fontWeight: 600 }}
             >
-              <Sliders size={24} weight="regular" />
-            </div>
-            <h2 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '6px', color: 'var(--color-text-primary)', letterSpacing: '-0.02em' }}>
-              Security & Workspace Settings
-            </h2>
-            <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', marginBottom: '28px', lineHeight: 1.6 }}>
-              Manage master credentials, cryptographic proof parameters, and mutual device consent policies.
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', fontSize: '13.5px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '14px 0', borderBottom: '1px solid #EDF3EE' }}>
-                <span style={{ color: 'var(--color-text-secondary)' }}>Master Account Name</span>
-                <strong style={{ color: 'var(--color-text-primary)' }}>{user.name}</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '14px 0', borderBottom: '1px solid #EDF3EE' }}>
-                <span style={{ color: 'var(--color-text-secondary)' }}>Email Identity</span>
-                <strong style={{ color: 'var(--color-text-primary)' }}>{user.email}</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '14px 0', borderBottom: '1px solid #EDF3EE' }}>
-                <span style={{ color: 'var(--color-text-secondary)' }}>Hardware Cryptographic Proofs</span>
-                <span style={{ color: '#1A6E40', fontWeight: 700 }}>Enforced (SHA256withRSA)</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '14px 0', borderBottom: '1px solid #EDF3EE' }}>
-                <span style={{ color: 'var(--color-text-secondary)' }}>Strict Zero-Emoji Directives</span>
-                <span style={{ color: '#1A6E40', fontWeight: 700 }}>Active (Phosphor Vector Icons)</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '14px 0' }}>
-                <span style={{ color: 'var(--color-text-secondary)' }}>Telemetry Retention Window</span>
-                <strong style={{ color: 'var(--color-text-primary)' }}>30 Days Automated Prune</strong>
-              </div>
-            </div>
+              Dismiss
+            </button>
           </div>
-        </div>
-      ) : (
-        <DashboardPage
-          user={user}
-          devices={devices}
-          telemetryMap={telemetryMap}
-          onInspectDevice={(device) => setSelectedDevice(device)}
-          onRevokeDevice={handleRevokeDevice}
-          onPairDevice={handlePairDevice}
-          busy={busy}
-        />
-      )}
+        )}
+
+        {/* Active Tab View Body */}
+        <main style={{ flex: 1, padding: '32px', minWidth: 0 }}>
+          {selectedDevice ? (
+            <DeviceDetailPage
+              device={selectedDevice}
+              onBack={() => {
+                setSelectedDevice(null)
+                void loadDevices()
+              }}
+              onDeviceUpdated={(updated) => {
+                setSelectedDevice(updated)
+                setDevices((prev) => prev.map((d) => (d.id === updated.id ? updated : d)))
+              }}
+            />
+          ) : currentTab === 'activity' ? (
+            <ActivityPage user={user} devices={devices} />
+          ) : currentTab === 'security' ? (
+            <SecurityPage
+              user={user}
+              devices={devices}
+              onRevokeDevice={handleRevokeDevice}
+              busy={busy}
+            />
+          ) : currentTab === 'settings' ? (
+            <SettingsPage
+              user={user}
+              onSignOut={handleSignOut}
+              busy={busy}
+              serverConnected={serverConnected}
+            />
+          ) : (
+            <DashboardPage
+              user={user}
+              devices={devices}
+              telemetryMap={telemetryMap}
+              platformFilter={platformFilter}
+              onPlatformFilterChange={setPlatformFilter}
+              onInspectDevice={(device) => setSelectedDevice(device)}
+              onRevokeDevice={handleRevokeDevice}
+              onPairDevice={handlePairDevice}
+              busy={busy}
+            />
+          )}
+        </main>
+      </div>
 
       {/* Device Enrollment Modal */}
       <EnrollmentModal
