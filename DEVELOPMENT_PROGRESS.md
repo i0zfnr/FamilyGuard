@@ -85,3 +85,10 @@ Android debug build and unit tests, plus web build and lint, passed after the br
 - Ryaze project `xennguard.ryz.my.id` reported a Git clone failure because it requested `main` while only `master` existed. Created `origin/main` at the same commit as `origin/master` without modifying either branch's existing history.
 - Ryaze's Laravel builder operates from the repository root; the app is under `services/api`, and the React build is separate. The root layout, production settings, database and public app have not been validated. No redeployment was triggered.
 - The API's AGENTS.md requires Laravel Boost setup before application changes. Composer package installation stalled during optimized autoload generation, so the attempted dependency changes were reverted. Boost setup remains incomplete.
+
+## Ryaze root deployment packaging (2026-11-09)
+
+- Added root Laravel entry files and a checked-in React production build so Ryaze's root-level Laravel builder can load the app and serve the web client. API requests are routed through the Laravel front controller; the client root is served as static HTML.
+- Configured Laravel to use its existing `services/api` config, migration, storage and log directories while using the repository root as its base/public directory. Changed the safe starter defaults to SQLite, file sessions/cache, and synchronous jobs so a new deployment does not depend on unverified host database services.
+- Validation: Composer root metadata validates; Laravel lists all 15 API routes; SQLite migrations completed; 11 backend tests passed with 61 assertions; local HTTP smoke checks returned 200 for the XennGuard homepage, compiled JavaScript, icon, health endpoint and CSRF session endpoint. These checks use the local PHP runtime and do not prove Ryaze compatibility.
+- Remaining: commit/push to Ryaze's configured `main` branch, trigger deployment and verify public HTTPS. Host PHP compatibility, persistent database configuration, account workflows and production device workflows remain unverified. Enrollment stays disabled by default until consent and device security are validated.
