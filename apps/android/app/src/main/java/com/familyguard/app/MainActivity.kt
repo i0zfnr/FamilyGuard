@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
                 Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("FamilyGuard", style = MaterialTheme.typography.headlineMedium)
+                    Text("XennGuard", style = MaterialTheme.typography.headlineMedium)
                     Text("Device management with your permission")
                     OutlinedButton(enabled = !busy, onClick = { startActivity(Intent(this@MainActivity, AdminActivity::class.java)) }) { Text("Sign in to manage devices") }
                     if (!paired) {

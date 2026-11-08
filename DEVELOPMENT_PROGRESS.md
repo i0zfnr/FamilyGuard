@@ -66,3 +66,8 @@ The requested flow is for the administrator's phone to scan a short-lived QR cod
 - Added a native Android account sign-in screen that uses the existing Laravel session and CSRF endpoints over HTTPS, keeps its session in memory, and can retrieve the first page of owner-scoped devices. This does not grant administrator privileges or implement QR scanning, and the account session is not persistent across activity recreation.
 - `assembleDebug` and existing Android unit tests passed. The sign-in flow has not been tested against an HTTPS server or on a real phone.
 - Ryaze offers Laravel deployments from Git or ZIP. No Git remote, production configuration, provisioned database, or deployment has been configured. The web/API prototype is not production-ready; public registration, MFA, QR pairing, and device safety require further work.
+
+## XennGuard branding
+
+- Renamed the visible Android and web app branding to XennGuard and used the user-supplied image for the launcher icon, web brand and favicon. Internal Android package and credential identifiers remain unchanged to preserve app identity.
+Android debug build and unit tests, plus web build and lint, passed after the branding change. No launcher or device UI was tested on hardware.

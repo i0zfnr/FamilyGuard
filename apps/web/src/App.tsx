@@ -64,7 +64,7 @@ function App() {
   const [password, setPassword] = useState('')
   const [confirmation, setConfirmation] = useState('')
 
-  useEffect(() => { api<{ user: User }>('/auth/me').then(result => setUser(result.user)).catch(e => { if (!(e instanceof RequestError && e.status === 401)) setError('Unable to connect to FamilyGuard. Check that the API server is running.') }).finally(() => setLoading(false)) }, [])
+  useEffect(() => { api<{ user: User }>('/auth/me').then(result => setUser(result.user)).catch(e => { if (!(e instanceof RequestError && e.status === 401)) setError('Unable to connect to XennGuard. Check that the API server is running.') }).finally(() => setLoading(false)) }, [])
   useEffect(() => {
     if (!user) return
     api<{ data: Device[] }>('/devices').then(result => setDevices(result.data)).catch(e => setError(e instanceof Error ? e.message : 'Unable to load devices.'))
@@ -98,7 +98,7 @@ function App() {
     finally { setBusy(false) }
   }
   return <main className="shell">
-    <header><div className="brand"><span className="mark">F</span><span>FamilyGuard<small>DEVICE MANAGEMENT</small></span></div><span className="badge">EARLY DEVELOPMENT</span></header>
+    <header><div className="brand"><img className="mark" src="/xennguard-icon.jpg" alt="" /><span>XennGuard<small>DEVICE MANAGEMENT</small></span></div><span className="badge">EARLY DEVELOPMENT</span></header>
     {loading ? <p className="notice" role="status">Loading account…</p> : user ? <>
       <section className="hero compact"><p className="eyebrow">YOUR FAMILY, CONNECTED</p><h1>Welcome back,<br /><span>{user.name}.</span></h1><p className="intro">Your account is signed in. Devices shown here belong to this account.</p><button className="secondary" onClick={logout} disabled={busy}>Sign out</button></section>
       {error && <p className="error" role="alert">{error}</p>}
@@ -107,14 +107,14 @@ function App() {
         {!challenge ? <button className="secondary" disabled={busy} onClick={newChallenge}>Create enrollment challenge</button> : <div className="challenge"><p><strong>{challenge.enrollment_available ? 'Experimental enrollment is enabled.' : 'Enrollment is disabled on this server.'}</strong> This code expires {new Date(challenge.expires_at).toLocaleString()}. Share it only with the device owner.</p><label>Challenge ID<input readOnly value={challenge.id} /></label><label>Challenge secret<input readOnly value={challenge.token} /></label><button className="secondary" disabled={busy} onClick={cancelChallenge}>Cancel challenge</button></div>}
       </section>
       <aside><strong>Remote assistance is not available yet.</strong> Device enrollment, MFA, recovery and remote access are still being built.</aside>
-    </> : <div className="auth-layout"><section className="hero"><p className="eyebrow">YOUR FAMILY, CONNECTED</p><h1>Care for the devices<br /><span>that matter.</span></h1><p className="intro">A secure space for managing your family’s devices and providing assistance with their consent.</p></section><section className="auth-card"><h2>{register ? 'Create an account' : 'Welcome back'}</h2><p>{register ? 'Start with a device owner account.' : 'Sign in to your FamilyGuard account.'}</p><form onSubmit={submit}>
+    </> : <div className="auth-layout"><section className="hero"><p className="eyebrow">YOUR FAMILY, CONNECTED</p><h1>Care for the devices<br /><span>that matter.</span></h1><p className="intro">A secure space for managing your family’s devices and providing assistance with their consent.</p></section><section className="auth-card"><h2>{register ? 'Create an account' : 'Welcome back'}</h2><p>{register ? 'Start with a device owner account.' : 'Sign in to your XennGuard account.'}</p><form onSubmit={submit}>
       {register && <label>Name<input value={name} onChange={e => setName(e.target.value)} autoComplete="name" required maxLength={100} /></label>}
       <label>Email<input type="email" value={email} onChange={e => setEmail(e.target.value)} autoComplete="email" required /></label>
       <label>Password<input type="password" value={password} onChange={e => setPassword(e.target.value)} autoComplete={register ? 'new-password' : 'current-password'} required minLength={register ? 12 : undefined} /></label>
       {register && <label>Confirm password<input type="password" value={confirmation} onChange={e => setConfirmation(e.target.value)} autoComplete="new-password" required minLength={12} /></label>}
       {error && <p className="error" role="alert">{error}</p>}<button disabled={busy}>{busy ? 'Please wait…' : register ? 'Create account' : 'Sign in'}</button></form>
       <button className="link" onClick={() => { setRegister(!register); setError('') }}>{register ? 'Already have an account? Sign in' : 'Create an account'}</button></section></div>}
-    <footer>FamilyGuard <span>·</span> Local development preview</footer>
+    <footer>XennGuard <span>·</span> Local development preview</footer>
   </main>
 }
 export default App

@@ -72,7 +72,7 @@ class AdminActivity : ComponentActivity() {
                 var busy by remember { mutableStateOf(false) }; var error by remember { mutableStateOf("") }
                 val scope = rememberCoroutineScope()
                 Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("FamilyGuard", style = MaterialTheme.typography.headlineMedium)
+                    Text("XennGuard", style = MaterialTheme.typography.headlineMedium)
                     if (session == null) {
                         Text("Sign in to view your devices.")
                         OutlinedTextField(server, { server = it }, label = { Text("HTTPS server address") }, modifier = Modifier.fillMaxWidth())
