@@ -1,0 +1,643 @@
+[
+  {
+    "as": "root",
+    "command": "frame.create",
+    "params": {
+      "name": "XennGuard - Split Screen Editorial Auth (1440x900)",
+      "width": 1440,
+      "height": 900,
+      "x": 0,
+      "y": 0,
+      "props": {
+        "fill": "#F8FAF8",
+        "clip": true
+      }
+    }
+  },
+  {
+    "as": "leftPanel",
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Story Dark Canvas",
+      "x": 0,
+      "y": 0,
+      "width": 680,
+      "height": 900,
+      "props": {
+        "fill": "#090C0A"
+      }
+    }
+  },
+  {
+    "as": "logoMark",
+    "command": "image.place",
+    "params": {
+      "parent": {
+        "$ref": "root"
+      },
+      "path": "C:\\laragon\\www\\FamilyGuard\\public\\xennguard-icon.jpg",
+      "x": 56,
+      "y": 48,
+      "width": 36,
+      "height": 36
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Brand Title",
+      "text": "XennGuard",
+      "x": 104,
+      "y": 54,
+      "props": {
+        "fill": "#FFFFFF",
+        "fontSize": 18,
+        "fontFamily": "Inter"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Story Edition",
+      "text": "FAMILY DEVICE CARE / 01",
+      "x": 460,
+      "y": 58,
+      "props": {
+        "fill": "#7E8E82",
+        "fontSize": 10,
+        "fontFamily": "Inter"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "ellipse",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Story Status Dot",
+      "x": 56,
+      "y": 222,
+      "width": 6,
+      "height": 6,
+      "props": {
+        "fill": "#97C293"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Story Overline",
+      "text": "CLOSER, EVEN FROM AFAR",
+      "x": 70,
+      "y": 218,
+      "props": {
+        "fill": "#97C293",
+        "fontSize": 10,
+        "fontFamily": "Inter"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Headline Line 1",
+      "text": "Care is always",
+      "x": 56,
+      "y": 248,
+      "props": {
+        "fill": "#FFFFFF",
+        "fontSize": 52,
+        "fontFamily": "Inter"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Headline Line 2",
+      "text": "within reach.",
+      "x": 56,
+      "y": 312,
+      "props": {
+        "fill": "#A2C49E",
+        "fontSize": 52,
+        "fontFamily": "Inter"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Story Paragraph",
+      "text": "A thoughtful way to stay connected to the devices and people that matter most.",
+      "x": 56,
+      "y": 392,
+      "width": 360,
+      "props": {
+        "fill": "#9BA89F",
+        "fontSize": 14,
+        "fontFamily": "Inter"
+      }
+    }
+  },
+  {
+    "as": "doveHero",
+    "command": "image.place",
+    "params": {
+      "parent": {
+        "$ref": "root"
+      },
+      "path": "C:\\laragon\\www\\FamilyGuard\\public\\xennguard-icon.jpg",
+      "x": 180,
+      "y": 440,
+      "width": 480,
+      "height": 340,
+      "mode": "fit"
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "ellipse",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Footer Circle Badge",
+      "x": 56,
+      "y": 824,
+      "width": 34,
+      "height": 34,
+      "props": {
+        "stroke": "#394A3C",
+        "fill": "#0E1510"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Footer Badge Symbol",
+      "text": "✦",
+      "x": 67,
+      "y": 832,
+      "props": {
+        "fill": "#95BD91",
+        "fontSize": 12,
+        "fontFamily": "Inter"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Footer Story Note",
+      "text": "For the people you look out for.",
+      "x": 102,
+      "y": 833,
+      "props": {
+        "fill": "#86968B",
+        "fontSize": 11,
+        "fontFamily": "Inter"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Footer Story Link",
+      "text": "DESIGNED FOR CONNECTION ↗",
+      "x": 440,
+      "y": 834,
+      "props": {
+        "fill": "#7E8F83",
+        "fontSize": 10,
+        "fontFamily": "Inter"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Header Right Subtitle",
+      "text": "YOUR SPACE, MADE SIMPLE",
+      "x": 740,
+      "y": 58,
+      "props": {
+        "fill": "#88988C",
+        "fontSize": 10,
+        "fontFamily": "Inter"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "ellipse",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Header Status Dot",
+      "x": 1220,
+      "y": 59,
+      "width": 7,
+      "height": 7,
+      "props": {
+        "fill": "#449E5D"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Header Status Label",
+      "text": "DEVELOPMENT PREVIEW",
+      "x": 1234,
+      "y": 56,
+      "props": {
+        "fill": "#54685A",
+        "fontSize": 10,
+        "fontFamily": "Inter"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Auth Icon Platter",
+      "x": 840,
+      "y": 160,
+      "width": 44,
+      "height": 44,
+      "props": {
+        "fill": "#EAF2EB",
+        "stroke": "#D3E3D6",
+        "cornerRadius": 14
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Auth Platter Glyph",
+      "text": "❖",
+      "x": 855,
+      "y": 172,
+      "props": {
+        "fill": "#275936",
+        "fontSize": 16,
+        "fontFamily": "Inter"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Auth Eyebrow",
+      "text": "WELCOME TO XENNGUARD",
+      "x": 840,
+      "y": 226,
+      "props": {
+        "fill": "#637769",
+        "fontSize": 10,
+        "fontFamily": "Inter"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Auth Main Heading",
+      "text": "Welcome back.",
+      "x": 840,
+      "y": 250,
+      "props": {
+        "fill": "#152219",
+        "fontSize": 36,
+        "fontFamily": "Inter"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Auth Subtitle",
+      "text": "Sign in to keep the important things close.",
+      "x": 840,
+      "y": 300,
+      "props": {
+        "fill": "#6B7E70",
+        "fontSize": 14,
+        "fontFamily": "Inter"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Email Label",
+      "text": "Email address",
+      "x": 840,
+      "y": 345,
+      "props": {
+        "fill": "#28392C",
+        "fontSize": 12,
+        "fontFamily": "Inter"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Email Input Box",
+      "x": 840,
+      "y": 368,
+      "width": 420,
+      "height": 48,
+      "props": {
+        "fill": "#F0F5F1",
+        "stroke": "#D0DED3",
+        "cornerRadius": 12
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Email Input Value",
+      "text": "irfanhafizul123@gmail.com",
+      "x": 856,
+      "y": 383,
+      "props": {
+        "fill": "#1A291E",
+        "fontSize": 14,
+        "fontFamily": "Inter"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Password Label",
+      "text": "Password",
+      "x": 840,
+      "y": 435,
+      "props": {
+        "fill": "#28392C",
+        "fontSize": 12,
+        "fontFamily": "Inter"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Password Input Box",
+      "x": 840,
+      "y": 458,
+      "width": 420,
+      "height": 48,
+      "props": {
+        "fill": "#F0F5F1",
+        "stroke": "#D0DED3",
+        "cornerRadius": 12
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Password Dots",
+      "text": "••••••••••••••••",
+      "x": 856,
+      "y": 474,
+      "props": {
+        "fill": "#1A291E",
+        "fontSize": 16,
+        "fontFamily": "Inter"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Trust Badge",
+      "text": "Protected by hardware tokens & end-to-end encryption",
+      "x": 840,
+      "y": 526,
+      "props": {
+        "fill": "#728477",
+        "fontSize": 11,
+        "fontFamily": "Inter"
+      }
+    }
+  },
+  {
+    "as": "submitBtn",
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Submit Button Box",
+      "x": 840,
+      "y": 556,
+      "width": 420,
+      "height": 50,
+      "props": {
+        "fill": "#1B3626",
+        "cornerRadius": 12
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Submit Button Text",
+      "text": "Sign in",
+      "x": 864,
+      "y": 572,
+      "props": {
+        "fill": "#FFFFFF",
+        "fontSize": 14,
+        "fontFamily": "Inter"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Submit Button Arrow",
+      "text": "↗",
+      "x": 1224,
+      "y": 570,
+      "props": {
+        "fill": "#FFFFFF",
+        "fontSize": 16,
+        "fontFamily": "Inter"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Switch Link Prompt",
+      "text": "New to XennGuard?  Create an account →",
+      "x": 840,
+      "y": 636,
+      "props": {
+        "fill": "#6B7E70",
+        "fontSize": 13,
+        "fontFamily": "Inter"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Right Footer Copyright",
+      "text": "© XennGuard",
+      "x": 740,
+      "y": 834,
+      "props": {
+        "fill": "#8A998E",
+        "fontSize": 11,
+        "fontFamily": "Inter"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "text",
+      "parent": {
+        "$ref": "root"
+      },
+      "name": "Right Footer Tagline",
+      "text": "Thoughtful technology for everyday life.",
+      "x": 1120,
+      "y": 834,
+      "props": {
+        "fill": "#8A998E",
+        "fontSize": 11,
+        "fontFamily": "Inter"
+      }
+    }
+  }
+]

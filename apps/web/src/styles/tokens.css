@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* Editorial Organic Palette (Matches XennGuard Authentic Brand) */
+  --color-canvas-bg: #F7FAF7;
+  --color-canvas-subtle: #EDF3EE;
+  --color-canvas-sidebar: #F2F7F3;
+
+  /* Elevated Surfaces */
+  --color-surface-card: #FFFFFF;
+  --color-surface-card-hover: #F8FBF8;
+  --color-surface-card-elevated: #FFFFFF;
+  --color-surface-card-border: #D7E3D9;
+  --color-surface-card-border-subtle: #E2ECE4;
+  --color-surface-row-hover: #F2F7F3;
+
+  /* Form Controls & Inputs */
+  --color-surface-input: #F0F5F1;
+  --color-surface-input-border: #CFDCD2;
+  --color-surface-input-focus: #265C38;
+  --color-surface-input-ring: rgba(38, 92, 56, 0.16);
+  --color-surface-input-placeholder: #7B8F80;
+
+  /* Brand Actions & Primary CTAs (Deep Pine Forest Green) */
+  --color-brand-primary: #1B3626;
+  --color-brand-primary-text: #FFFFFF;
+  --color-brand-primary-hover: #264D37;
+  --color-brand-primary-active: #152B1E;
+  --color-brand-blue: #1B3626;
+  --color-brand-blue-hover: #264D37;
+  --color-accent-sky: #2E6B43;
+  --color-accent-sky-subtle: #EAF2EB;
+
+  /* Semantic Status Indicators (WCAG AA Compliant on White: Contrast >= 4.5:1) */
+  --color-status-online: #1A6E40;
+  --color-status-online-bg: #EBF5EE;
+  --color-status-online-border: #C6E6D0;
+
+  --color-status-warning: #964B09;
+  --color-status-warning-bg: #FEF7EC;
+  --color-status-warning-border: #F9DEB7;
+
+  --color-status-critical: #991B1B;
+  --color-status-critical-bg: #FDF2F2;
+  --color-status-critical-border: #F8D0D0;
+
+  --color-status-neutral: #4D6253;
+  --color-status-neutral-bg: #EDF3EE;
+  --color-status-neutral-border: #D5E0D7;
+
+  /* Typography Colors */
+  --color-text-primary: #152219;
+  --color-text-secondary: #4D6253;
+  --color-text-muted: #6C8172;
+  --color-text-inverse: #FFFFFF;
+
+  /* Floating Chrome Platter Tokens */
+  --glass-bg: rgba(255, 255, 255, 0.88);
+  --glass-bg-hover: rgba(255, 255, 255, 0.95);
+  --glass-bg-active: #FFFFFF;
+  --glass-border: 1px solid rgba(215, 227, 217, 0.9);
+  --glass-border-hover: 1px solid #C4D5C7;
+  --glass-blur: 16px;
+  --glass-saturate: 160%;
+  --glass-inner-rim: inset 0 1px 1px 0 rgba(255, 255, 255, 0.8);
+  --glass-inner-shadow: inset 0 -1px 2px 0 rgba(20, 42, 28, 0.04);
+  --glass-drop-shadow: 0 4px 20px -2px rgba(20, 42, 28, 0.07);
+
+  /* Modal Platter Spec */
+  --glass-modal-bg: #FFFFFF;
+  --glass-modal-border: 1px solid #D5E0D7;
+  --glass-modal-blur: 24px;
+  --glass-modal-saturate: 180%;
+  --glass-modal-shadow: 0 20px 50px -10px rgba(20, 42, 28, 0.18);
+
+  /* Spacing Scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Disciplined Border Radii */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-pill: 9999px;
+
+  /* Restrained Shadows */
+  --shadow-card: 0 2px 8px -1px rgba(20, 42, 28, 0.05);
+  --shadow-card-hover: 0 4px 16px -2px rgba(20, 42, 28, 0.09);
+  --shadow-glass-platter: 0 4px 20px -2px rgba(20, 42, 28, 0.07);
+  --shadow-modal: 0 20px 50px -10px rgba(20, 42, 28, 0.18);
+  --focus-ring: 0 0 0 2px #FFFFFF, 0 0 0 4px #265C38;
+
+  /* Fonts */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+
+  /* Transitions */
+  --transition-fast: 120ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow: 350ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Screen reader utility (strictly invisible visually, accessible to screen readers) */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border-width: 0 !important;
+}
+
+/* Tabular figures for numbers, metrics, and IPs */
+.tabular-nums,
+.stat-value,
+.device-meta-row,
+.stat-item strong {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Reduced Motion Fallback */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

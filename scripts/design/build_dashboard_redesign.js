@@ -1,0 +1,876 @@
+const fs = require('fs');
+const path = require('path');
+
+const commands = [
+  // 1. Root Frame
+  {
+    as: "root",
+    command: "frame.create",
+    params: {
+      name: "XennGuard - Editorial Dashboard (1440x900)",
+      width: 1440,
+      height: 900,
+      x: 0,
+      y: 0,
+      props: {
+        fill: "#F7FAF7",
+        clip: true
+      }
+    }
+  },
+
+  // 2. Floating Header Navigation
+  {
+    command: "node.create",
+    params: {
+      type: "rectangle",
+      parent: { $ref: "root" },
+      name: "Header Platter",
+      x: 60,
+      y: 20,
+      width: 1320,
+      height: 64,
+      props: {
+        fill: "#FFFFFF",
+        stroke: "#D7E3D9",
+        cornerRadius: 32
+      }
+    }
+  },
+  {
+    as: "logoMark",
+    command: "image.place",
+    params: {
+      parent: { $ref: "root" },
+      path: "C:\\laragon\\www\\FamilyGuard\\public\\xennguard-icon.jpg",
+      x: 82,
+      y: 36,
+      width: 32,
+      height: 32
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Header Brand Title",
+      text: "XennGuard",
+      x: 124,
+      y: 42,
+      props: {
+        fill: "#152219",
+        fontSize: 18,
+        fontFamily: "Inter"
+      }
+    }
+  },
+
+  // Navigation Pills
+  {
+    command: "node.create",
+    params: {
+      type: "rectangle",
+      parent: { $ref: "root" },
+      name: "Nav Active Pill",
+      x: 260,
+      y: 34,
+      width: 86,
+      height: 36,
+      props: {
+        fill: "#1B3626",
+        cornerRadius: 18
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Nav Text Devices",
+      text: "Devices",
+      x: 280,
+      y: 44,
+      props: {
+        fill: "#FFFFFF",
+        fontSize: 13,
+        fontFamily: "Inter"
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Nav Text Audit",
+      text: "Audit Logs",
+      x: 370,
+      y: 44,
+      props: {
+        fill: "#4D6253",
+        fontSize: 13,
+        fontFamily: "Inter"
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Nav Text Settings",
+      text: "Settings",
+      x: 470,
+      y: 44,
+      props: {
+        fill: "#4D6253",
+        fontSize: 13,
+        fontFamily: "Inter"
+      }
+    }
+  },
+
+  // Header Actions
+  {
+    command: "node.create",
+    params: {
+      type: "ellipse",
+      parent: { $ref: "root" },
+      name: "Status Dot",
+      x: 955,
+      y: 48,
+      width: 7,
+      height: 7,
+      props: {
+        fill: "#1E824C"
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Status Text",
+      text: "Connected",
+      x: 970,
+      y: 44,
+      props: {
+        fill: "#1E824C",
+        fontSize: 12,
+        fontFamily: "Inter"
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "rectangle",
+      parent: { $ref: "root" },
+      name: "User Pill",
+      x: 1070,
+      y: 34,
+      width: 140,
+      height: 36,
+      props: {
+        fill: "#EDF3EE",
+        stroke: "#DCE6DE",
+        cornerRadius: 18
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "User Name",
+      text: "Irfan Hafizul",
+      x: 1100,
+      y: 44,
+      props: {
+        fill: "#152219",
+        fontSize: 13,
+        fontFamily: "Inter"
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "rectangle",
+      parent: { $ref: "root" },
+      name: "Header Pair Button",
+      x: 1230,
+      y: 34,
+      width: 130,
+      height: 36,
+      props: {
+        fill: "#1B3626",
+        cornerRadius: 10
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Header Pair Button Text",
+      text: "+ Pair Device",
+      x: 1252,
+      y: 44,
+      props: {
+        fill: "#FFFFFF",
+        fontSize: 13,
+        fontFamily: "Inter"
+      }
+    }
+  },
+
+  // 3. Left Sidebar
+  {
+    command: "node.create",
+    params: {
+      type: "rectangle",
+      parent: { $ref: "root" },
+      name: "Sidebar Box",
+      x: 60,
+      y: 110,
+      width: 220,
+      height: 300,
+      props: {
+        fill: "#FFFFFF",
+        stroke: "#D7E3D9",
+        cornerRadius: 12
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Sidebar Label",
+      text: "WORKSPACE",
+      x: 80,
+      y: 128,
+      props: {
+        fill: "#6C8172",
+        fontSize: 10,
+        fontFamily: "Inter"
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "rectangle",
+      parent: { $ref: "root" },
+      name: "Sidebar Item Active",
+      x: 74,
+      y: 154,
+      width: 192,
+      height: 36,
+      props: {
+        fill: "#1B3626",
+        cornerRadius: 8
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Sidebar Text Devices",
+      text: "Devices",
+      x: 94,
+      y: 164,
+      props: {
+        fill: "#FFFFFF",
+        fontSize: 13,
+        fontFamily: "Inter"
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Sidebar Text Activity",
+      text: "Activity",
+      x: 94,
+      y: 206,
+      props: {
+        fill: "#4D6253",
+        fontSize: 13,
+        fontFamily: "Inter"
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Sidebar Text Security",
+      text: "Security",
+      x: 94,
+      y: 246,
+      props: {
+        fill: "#4D6253",
+        fontSize: 13,
+        fontFamily: "Inter"
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Sidebar Text Settings",
+      text: "Settings",
+      x: 94,
+      y: 286,
+      props: {
+        fill: "#4D6253",
+        fontSize: 13,
+        fontFamily: "Inter"
+      }
+    }
+  },
+
+  // 4. Main Content Header
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Content Eyebrow",
+      text: "FAMILY DEVICE CARE / WORKSPACE OVERVIEW",
+      x: 310,
+      y: 114,
+      props: {
+        fill: "#265C38",
+        fontSize: 11,
+        fontFamily: "Inter"
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Content Heading",
+      text: "Devices",
+      x: 310,
+      y: 136,
+      props: {
+        fill: "#152219",
+        fontSize: 32,
+        fontFamily: "Inter"
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Content Subtitle",
+      text: "Manage your trusted devices (Good to see you, Irfan Hafizul)",
+      x: 310,
+      y: 182,
+      props: {
+        fill: "#4D6253",
+        fontSize: 14,
+        fontFamily: "Inter"
+      }
+    }
+  },
+
+  // 5. Stat Platter Cards
+  // Total Card
+  {
+    command: "node.create",
+    params: {
+      type: "rectangle",
+      parent: { $ref: "root" },
+      name: "Stat Total Box",
+      x: 310,
+      y: 218,
+      width: 170,
+      height: 84,
+      props: {
+        fill: "#FFFFFF",
+        stroke: "#D7E3D9",
+        cornerRadius: 12
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Stat Total Label",
+      text: "TOTAL:",
+      x: 328,
+      y: 232,
+      props: {
+        fill: "#6C8172",
+        fontSize: 11,
+        fontFamily: "Inter"
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Stat Total Value",
+      text: "03",
+      x: 328,
+      y: 254,
+      props: {
+        fill: "#152219",
+        fontSize: 28,
+        fontFamily: "Inter"
+      }
+    }
+  },
+
+  // Online Card
+  {
+    command: "node.create",
+    params: {
+      type: "rectangle",
+      parent: { $ref: "root" },
+      name: "Stat Online Box",
+      x: 496,
+      y: 218,
+      width: 170,
+      height: 84,
+      props: {
+        fill: "#FFFFFF",
+        stroke: "#D7E3D9",
+        cornerRadius: 12
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Stat Online Label",
+      text: "ONLINE:",
+      x: 514,
+      y: 232,
+      props: {
+        fill: "#6C8172",
+        fontSize: 11,
+        fontFamily: "Inter"
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Stat Online Value",
+      text: "02",
+      x: 514,
+      y: 254,
+      props: {
+        fill: "#1E824C",
+        fontSize: 28,
+        fontFamily: "Inter"
+      }
+    }
+  },
+
+  // Alerts Card
+  {
+    command: "node.create",
+    params: {
+      type: "rectangle",
+      parent: { $ref: "root" },
+      name: "Stat Alerts Box",
+      x: 682,
+      y: 218,
+      width: 170,
+      height: 84,
+      props: {
+        fill: "#FFFFFF",
+        stroke: "#D7E3D9",
+        cornerRadius: 12
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Stat Alerts Label",
+      text: "ALERTS:",
+      x: 700,
+      y: 232,
+      props: {
+        fill: "#6C8172",
+        fontSize: 11,
+        fontFamily: "Inter"
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Stat Alerts Value",
+      text: "01",
+      x: 700,
+      y: 254,
+      props: {
+        fill: "#A85A12",
+        fontSize: 28,
+        fontFamily: "Inter"
+      }
+    }
+  },
+
+  // 6. Device List Cards
+  // Device Card 1
+  {
+    command: "node.create",
+    params: {
+      type: "rectangle",
+      parent: { $ref: "root" },
+      name: "Device Card 1",
+      x: 310,
+      y: 330,
+      width: 1070,
+      height: 72,
+      props: {
+        fill: "#FFFFFF",
+        stroke: "#D7E3D9",
+        cornerRadius: 12
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Device 1 Title",
+      text: "Dad's Galaxy S24 Ultra",
+      x: 360,
+      y: 346,
+      props: {
+        fill: "#152219",
+        fontSize: 15,
+        fontFamily: "Inter"
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Device 1 Meta",
+      text: "Android Device • 88% Battery • 184.0 GiB free",
+      x: 360,
+      y: 370,
+      props: {
+        fill: "#4D6253",
+        fontSize: 12,
+        fontFamily: "Inter"
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "rectangle",
+      parent: { $ref: "root" },
+      name: "Device 1 Inspect Btn",
+      x: 1230,
+      y: 348,
+      width: 130,
+      height: 36,
+      props: {
+        fill: "#EDF3EE",
+        stroke: "#CFDCD2",
+        cornerRadius: 8
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Device 1 Inspect Text",
+      text: "Inspect Telemetry",
+      x: 1242,
+      y: 358,
+      props: {
+        fill: "#1B3626",
+        fontSize: 12,
+        fontFamily: "Inter"
+      }
+    }
+  },
+
+  // Device Card 2
+  {
+    command: "node.create",
+    params: {
+      type: "rectangle",
+      parent: { $ref: "root" },
+      name: "Device Card 2",
+      x: 310,
+      y: 418,
+      width: 1070,
+      height: 72,
+      props: {
+        fill: "#FFFFFF",
+        stroke: "#D7E3D9",
+        cornerRadius: 12
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Device 2 Title",
+      text: "Kiddo's Pixel Tablet",
+      x: 360,
+      y: 434,
+      props: {
+        fill: "#152219",
+        fontSize: 15,
+        fontFamily: "Inter"
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Device 2 Meta",
+      text: "Android Device • 45% Battery • 42.0 GiB free",
+      x: 360,
+      y: 458,
+      props: {
+        fill: "#4D6253",
+        fontSize: 12,
+        fontFamily: "Inter"
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "rectangle",
+      parent: { $ref: "root" },
+      name: "Device 2 Inspect Btn",
+      x: 1140,
+      y: 436,
+      width: 130,
+      height: 36,
+      props: {
+        fill: "#EDF3EE",
+        stroke: "#CFDCD2",
+        cornerRadius: 8
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Device 2 Inspect Text",
+      text: "Inspect Telemetry",
+      x: 1152,
+      y: 446,
+      props: {
+        fill: "#1B3626",
+        fontSize: 12,
+        fontFamily: "Inter"
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "rectangle",
+      parent: { $ref: "root" },
+      name: "Device 2 Revoke Btn",
+      x: 1282,
+      y: 436,
+      width: 78,
+      height: 36,
+      props: {
+        fill: "#FDF2F2",
+        stroke: "#F8D0D0",
+        cornerRadius: 8
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Device 2 Revoke Text",
+      text: "Revoke",
+      x: 1298,
+      y: 446,
+      props: {
+        fill: "#991B1B",
+        fontSize: 12,
+        fontFamily: "Inter"
+      }
+    }
+  },
+
+  // Device Card 3
+  {
+    command: "node.create",
+    params: {
+      type: "rectangle",
+      parent: { $ref: "root" },
+      name: "Device Card 3",
+      x: 310,
+      y: 506,
+      width: 1070,
+      height: 72,
+      props: {
+        fill: "#FFFFFF",
+        stroke: "#D7E3D9",
+        cornerRadius: 12
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Device 3 Title",
+      text: "Living Room Surface Pro",
+      x: 360,
+      y: 522,
+      props: {
+        fill: "#152219",
+        fontSize: 15,
+        fontFamily: "Inter"
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Device 3 Meta",
+      text: "Windows Workstation • 96% (Charging) • 392.0 GiB free",
+      x: 360,
+      y: 546,
+      props: {
+        fill: "#4D6253",
+        fontSize: 12,
+        fontFamily: "Inter"
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "rectangle",
+      parent: { $ref: "root" },
+      name: "Device 3 Inspect Btn",
+      x: 1140,
+      y: 524,
+      width: 130,
+      height: 36,
+      props: {
+        fill: "#EDF3EE",
+        stroke: "#CFDCD2",
+        cornerRadius: 8
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Device 3 Inspect Text",
+      text: "Inspect Telemetry",
+      x: 1152,
+      y: 534,
+      props: {
+        fill: "#1B3626",
+        fontSize: 12,
+        fontFamily: "Inter"
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "rectangle",
+      parent: { $ref: "root" },
+      name: "Device 3 Revoke Btn",
+      x: 1282,
+      y: 524,
+      width: 78,
+      height: 36,
+      props: {
+        fill: "#FDF2F2",
+        stroke: "#F8D0D0",
+        cornerRadius: 8
+      }
+    }
+  },
+  {
+    command: "node.create",
+    params: {
+      type: "text",
+      parent: { $ref: "root" },
+      name: "Device 3 Revoke Text",
+      text: "Revoke",
+      x: 1298,
+      y: 534,
+      props: {
+        fill: "#991B1B",
+        fontSize: 12,
+        fontFamily: "Inter"
+      }
+    }
+  }
+];
+
+fs.writeFileSync(
+  path.join(__dirname, 'dashboard_screen_redesigned.json'),
+  JSON.stringify(commands, null, 2)
+);
+console.log('Successfully wrote dashboard_screen_redesigned.json with ' + commands.length + ' commands.');

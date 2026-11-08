@@ -92,3 +92,34 @@ Android debug build and unit tests, plus web build and lint, passed after the br
 - Configured Laravel to use its existing `services/api` config and migrations while using the repository root for public files, writable storage and bootstrap cache. Changed the safe starter defaults to SQLite, file sessions/cache, and synchronous jobs so a new deployment does not depend on unverified host database services.
 - Validation: Composer root metadata validates; Laravel lists all 15 API routes; SQLite migrations completed; the current workspace backend suite passed 28 tests with 148 assertions; local HTTP smoke checks returned 200 for the XennGuard homepage, compiled JavaScript, icon, health endpoint and CSRF session endpoint. These checks use the local PHP runtime and do not prove Ryaze compatibility.
 - Remaining: commit/push to Ryaze's configured `main` branch, trigger deployment and verify public HTTPS. Host PHP compatibility, persistent database configuration, account workflows and production device workflows remain unverified. Enrollment stays disabled by default until consent and device security are validated.
+
+## Ryaze live verification (2026-11-09)
+
+- Ryaze fetched `main` at `b194c4c`, Composer install and migrations completed, and its build log reported deployment finished. A production `APP_KEY` was generated through Ryaze's terminal; enrollment remains disabled.
+- The Ryaze dashboard reports the Pro subscription expired on 2026-08-25 and websites suspended, while the subscription page previously displayed Business active through 2026-11-28. The host account status is inconsistent; do not claim the plan is renewed or active based only on the subscription page.
+- Public checks: the SPA root has returned HTTP 200 when Ryaze serves static files; `/api/v1/health` and `/api/v1/csrf` have returned Cloudflare HTTP 502. A Laravel development server on port 8080 logged a local health request, but public requests could not be verified through it. The site is not usable for sign-in until Ryaze restores its upstream/tunnel or resolves the account suspension/runtime mismatch.
+- The deployment remains a prototype. QR pairing, remote assistance and production device management are not implemented. No user account was created, and no device was enrolled.
+- Follow-up routing diagnosis: the public SPA root now returns HTTP 200 after configuring `index.html` before `index.php`; Ryaze's terminal can reach Laravel on port 8080 and `/api/v1/health` returns `{"status":"ok"}` there. The public `/api/v1/health` still returns Cloudflare HTTP 502 through the PHP/FastCGI route. Nginx proxying the public domain directly to terminal port 8080 also returned 502, so the web process is not exposed to Ryaze's public gateway by that route. Sign-in remains blocked pending a working public PHP/app upstream.
+
+## Editorial Authentication Redesign v02 (2026-11-09)
+
+- Replaced previous generic mockup with an elevated editorial split-screen architecture matching genuine XennGuard design principles.
+- Left Panel: Deep night canvas (`#090C0A`) with high-contrast display typography ("Care is always within reach"), organic sage accents (`#A2C49E`), and seamless radial-mask integration of the authentic chromatic dove artwork (`/xennguard-icon.jpg`).
+- Right Panel: Serene porcelain canvas (`#F8FAF8`) featuring accessible form inputs, Phosphor vector icons (`@phosphor-icons/react`), interactive password visibility toggle, hardware encryption trust cues, and WCAG AA contrast compliance.
+- Strict Zero-Emoji compliance: Banned and purged all Unicode glyphs/asterisks (`✳`, `•`) from UI and copy; replaced with semantic Phosphor vector icons (`ShieldCheck`, `Sparkle`, `LockSimple`, `EnvelopeSimple`, `User`, `ArrowRight`, `ArrowUpRight`, `Eye`, `EyeSlash`).
+- FigCraft prototype revision saved to `prototypes/auth.figcraft` (Page 1, root frame `id: 50`, 35 layers).
+- Vitest test suite verified: 5 test files, 32 passed tests (100%).
+- Production assets built to `apps/web/dist` and synced to `public/assets/` (`index-D1P-kpzi.js`, `index-yh-mOstp.css`) and `public/index.html`.
+- Local verification server actively running on `http://127.0.0.1:8001`.
+
+## Full-Project Editorial Redesign (2026-11-09)
+
+- Executed full application visual overhaul extending the authentic XennGuard editorial design language from the authentication screen into all authenticated views (Dashboard, Devices list, Device Detail, Telemetry charts, Enrollment modal, Audit Logs, Settings).
+- Purged legacy dark blue AI template aesthetics (`#0b111e`, dark blue cards, generic glass gradients) in favor of the warm porcelain & sage palette (`#F7FAF7` canvas, `#FFFFFF` elevated cards with `#D7E3D9` borders, `#1B3626` pine forest green actions).
+- Architecture & Layout: Refactored Dashboard into an intuitive two-column workspace architecture (left workspace navigation drawer with active pine pill indicator, right high-density devices feed).
+- Screen Reader Accessibility & Numerical Polish: Resolved visual number duplication defect (`03 3` -> `03`) by adding strict `.sr-only` CSS and tabular numerals (`tabular-nums`) across stat platters.
+- Vector Iconography: Completely migrated all legacy icons to `@phosphor-icons/react` (Devices, WifiHigh, ShieldWarning, DeviceMobileCamera, Desktop, BatteryCharging, HardDrive, ChartLineUp, Lightning, Sparkle, SignOut, Plus, Clock, Prohibit, Check, Copy) adhering strictly to the Zero-Emoji directive.
+- Interactive Modals & Detail Views: Redesigned the cryptographic QR pairing modal (`EnrollmentModal.tsx`) with high-contrast SVG QR matrix, clear consent validation checkboxes, and time-remaining countdown badges. Telemetry view (`DeviceDetailPage.tsx`) updated with clean white card diagnostics and pine-accented sparklines.
+- FigCraft Prototype: Updated `prototypes/dashboard.figcraft` with 1440x900 editorial frame (`id: 147`, 51 children) and captured artifact screenshot `xennguard_dashboard_redesign_v2.png`.
+- Full Verification: 100% test pass rate on Vitest suite (32/32 tests passed across 5 test files). Production build cleanly compiled with Vite 8 (`index-DFVleFNx.js`, `index-BtmVPA4y.css`) and synced to `public/assets/` and `public/index.html`.
+- Running Servers: Vite HMR active on `http://127.0.0.1:5173`, Laravel API/SPA active on `http://127.0.0.1:8001`.

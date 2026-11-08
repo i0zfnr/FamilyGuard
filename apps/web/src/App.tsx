@@ -1,119 +1,427 @@
-import { useEffect, useState, type FormEvent } from 'react'
-import './App.css'
+import { useEffect, useState, useCallback } from 'react'
+import { HeaderPlatter, EnrollmentModal } from './components'
+import { AuthPage, DashboardPage, DeviceDetailPage } from './pages'
+import { api, RequestError } from './services/api'
+import type { User, Device, Telemetry, EnrollmentChallenge } from './types'
+import {
+  Sliders,
+  ClipboardText,
+} from '@phosphor-icons/react'
 
-type User = { id: number; name: string; email: string; role: string }
-type Device = { id: string; device_name: string; platform: string; enrollment_status: string; last_seen_at: string | null }
-type ApiError = { message?: string; errors?: Record<string, string[]> }
-class RequestError extends Error { readonly status: number; constructor(message: string, status: number) { super(message); this.status = status } }
-
-async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const headers: Record<string, string> = { Accept: 'application/json' }
-  if (options.method && options.method !== 'GET') {
-    const csrf = await fetch('/api/v1/csrf', { headers: { Accept: 'application/json' } })
-    if (!csrf.ok) throw new Error('Could not initialize the session.')
-    const token: { csrf_token: string } = await csrf.json()
-    headers['X-CSRF-TOKEN'] = token.csrf_token
-    headers['Content-Type'] = 'application/json'
-  }
-  const response = await fetch('/api/v1' + path, { ...options, headers })
-  if (!response.ok) {
-    const body: ApiError = await response.json().catch(() => ({}))
-    throw new RequestError(Object.values(body.errors ?? {}).flat().join(' ') || body.message || 'Request failed.', response.status)
-  }
-  return response.json() as Promise<T>
-}
-
-type Challenge = { id: string; token: string; expires_at: string; enrollment_available: boolean }
-
-type Telemetry = { battery_percentage: number | null; charging: boolean | null; storage_total: number | null; storage_available: number | null; network_type: string | null; recorded_at: string }
-
-function DeviceCard({ device, onRevoked }: { device: Device; onRevoked: () => void }) {
-  const [history, setHistory] = useState<Telemetry[] | null>(null)
-  const [message, setMessage] = useState('')
-  const [busy, setBusy] = useState(false)
-  async function showHealth() {
-    setBusy(true); setMessage('')
-    try { const result = await api<{ data: Telemetry[] }>('/devices/' + device.id + '/telemetry'); setHistory(result.data) }
-    catch (e) { setMessage(e instanceof Error ? e.message : 'Unable to load health reports.') }
-    finally { setBusy(false) }
-  }
-  async function revoke() {
-    if (!window.confirm('Revoke access for ' + device.device_name + '?')) return
-    setBusy(true); setMessage('')
-    try { await api('/devices/' + device.id + '/revoke', { method: 'POST' }); onRevoked() }
-    catch (e) { setMessage(e instanceof Error ? e.message : 'Unable to revoke device.') }
-    finally { setBusy(false) }
-  }
-  const latest = history?.[0]
-  return <article className="card"><span className="icon">◇</span><h2>{device.device_name}</h2><p>{device.platform} · {device.enrollment_status}</p><p>Last seen: {device.last_seen_at ? new Date(device.last_seen_at).toLocaleString() : 'Never reported'}</p>
-    <div className="device-actions"><button className="secondary" onClick={showHealth} disabled={busy}>View latest health</button>{device.enrollment_status !== 'revoked' && <button className="secondary" onClick={revoke} disabled={busy}>Revoke access</button>}</div>
-    {history && (latest ? <div className="health"><p>Reported: {new Date(latest.recorded_at).toLocaleString()}</p><p>Battery: {latest.battery_percentage == null ? 'Not reported' : latest.battery_percentage + '%'}{latest.charging == null ? '' : latest.charging ? ' · charging' : ' · not charging'}</p><p>Storage available: {latest.storage_available == null ? 'Not reported' : (latest.storage_available / 1073741824).toFixed(1) + ' GiB'}</p><p>Network: {latest.network_type ?? 'Not reported'}</p></div> : <p>No health reports have been received.</p>)}
-    {message && <p className="error" role="alert">{message}</p>}</article>
-}
-
-function App() {
+export function App() {
   const [user, setUser] = useState<User | null>(null)
-  const [devices, setDevices] = useState<Device[] | null>(null)
-  const [challenge, setChallenge] = useState<Challenge | null>(null)
   const [loading, setLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState<'devices' | 'audit' | 'settings'>('devices')
+  const [selectedDevice, setSelectedDevice] = useState<Device | null>(null)
+  const [devices, setDevices] = useState<Device[]>([])
+  const [telemetryMap, setTelemetryMap] = useState<Record<string, Telemetry>>({})
+  const [challenge, setChallenge] = useState<EnrollmentChallenge | null>(null)
+  const [isEnrollmentOpen, setIsEnrollmentOpen] = useState(false)
+  const [serverConnected, setServerConnected] = useState(true)
   const [busy, setBusy] = useState(false)
-  const [register, setRegister] = useState(false)
-  const [error, setError] = useState('')
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmation, setConfirmation] = useState('')
+  const [errorBanner, setErrorBanner] = useState<string | null>(null)
 
-  useEffect(() => { api<{ user: User }>('/auth/me').then(result => setUser(result.user)).catch(e => { if (!(e instanceof RequestError && e.status === 401)) setError('Unable to connect to XennGuard. Check that the API server is running.') }).finally(() => setLoading(false)) }, [])
-  useEffect(() => {
-    if (!user) return
-    api<{ data: Device[] }>('/devices').then(result => setDevices(result.data)).catch(e => setError(e instanceof Error ? e.message : 'Unable to load devices.'))
-  }, [user])
-
-  async function submit(event: FormEvent) {
-    event.preventDefault(); setBusy(true); setError('')
+  // Fetch devices when user is authenticated
+  const loadDevices = useCallback(async () => {
     try {
-      const body = register ? { name, email, password, password_confirmation: confirmation } : { email, password }
-      const result = await api<{ user: User }>('/auth/' + (register ? 'register' : 'login'), { method: 'POST', body: JSON.stringify(body) })
-      setUser(result.user); setPassword(''); setConfirmation('')
-    } catch (e) { setError(e instanceof Error ? e.message : 'Unable to sign in.') } finally { setBusy(false) }
+      const res = await api.devices.list()
+      const deviceList = res.data || []
+      setDevices(deviceList)
+
+      const latestMap: Record<string, Telemetry> = {}
+      await Promise.all(
+        deviceList.map(async (device) => {
+          try {
+            const telemetryRes = await api.devices.telemetry(device.id)
+            if (telemetryRes.data && telemetryRes.data.length > 0) {
+              latestMap[device.id] = telemetryRes.data[0]
+            }
+          } catch {
+            // Non-blocking telemetry fetch
+          }
+        })
+      )
+      setTelemetryMap(latestMap)
+    } catch (err) {
+      setErrorBanner(err instanceof Error ? err.message : 'Unable to load devices.')
+    }
+  }, [])
+
+  // Initial user session check
+  useEffect(() => {
+    let mounted = true
+    api.auth
+      .me()
+      .then((res) => {
+        if (mounted) {
+          setUser(res.user)
+          setServerConnected(true)
+          void loadDevices()
+        }
+      })
+      .catch((err) => {
+        if (mounted) {
+          if (err instanceof RequestError && err.status === 401) {
+            setUser(null)
+          } else {
+            setServerConnected(false)
+          }
+        }
+      })
+      .finally(() => {
+        if (mounted) setLoading(false)
+      })
+
+    return () => {
+      mounted = false
+    }
+  }, [loadDevices])
+
+  // Sign out handler
+  const handleSignOut = async () => {
+    setBusy(true)
+    try {
+      await api.auth.logout()
+      setUser(null)
+      setDevices([])
+      setTelemetryMap({})
+      setSelectedDevice(null)
+      setChallenge(null)
+      setIsEnrollmentOpen(false)
+    } catch (err) {
+      setErrorBanner(err instanceof Error ? err.message : 'Sign out error.')
+    } finally {
+      setBusy(false)
+    }
   }
-  async function logout() {
-    setBusy(true); setError('')
-    try { await api('/auth/logout', { method: 'POST' }); setUser(null); setDevices(null); setChallenge(null) }
-    catch (e) { setError(e instanceof Error ? e.message : 'Unable to sign out.') }
-    finally { setBusy(false) }
+
+  // Revoke device handler
+  const handleRevokeDevice = async (device: Device) => {
+    setBusy(true)
+    try {
+      await api.devices.revoke(device.id)
+      setDevices((prev) =>
+        prev.map((d) => (d.id === device.id ? { ...d, enrollment_status: 'revoked' } : d))
+      )
+      if (selectedDevice?.id === device.id) {
+        setSelectedDevice((prev) => (prev ? { ...prev, enrollment_status: 'revoked' } : null))
+      }
+    } catch (err) {
+      setErrorBanner(err instanceof Error ? err.message : 'Device revocation failed.')
+    } finally {
+      setBusy(false)
+    }
   }
-  async function newChallenge() {
-    setBusy(true); setError('')
-    try { setChallenge(await api<Challenge>('/devices/enrollment-challenges', { method: 'POST' })) }
-    catch (e) { setError(e instanceof Error ? e.message : 'Unable to create challenge.') }
-    finally { setBusy(false) }
+
+  // Issue enrollment challenge & open modal
+  const handlePairDevice = async () => {
+    setBusy(true)
+    setErrorBanner(null)
+    try {
+      const res = await api.challenges.create()
+      setChallenge(res)
+      setIsEnrollmentOpen(true)
+    } catch (err) {
+      setErrorBanner(err instanceof Error ? err.message : 'Could not create enrollment challenge.')
+    } finally {
+      setBusy(false)
+    }
   }
-  async function cancelChallenge() {
-    if (!challenge) return
-    setBusy(true); setError('')
-    try { await api('/devices/enrollment-challenges/' + challenge.id, { method: 'DELETE' }); setChallenge(null) }
-    catch (e) { setError(e instanceof Error ? e.message : 'Unable to revoke challenge.') }
-    finally { setBusy(false) }
+
+  // Cancel enrollment challenge
+  const handleCancelChallenge = async (challengeId: string) => {
+    setBusy(true)
+    try {
+      await api.challenges.revoke(challengeId)
+      setChallenge(null)
+    } catch (err) {
+      setErrorBanner(err instanceof Error ? err.message : 'Could not revoke challenge.')
+    } finally {
+      setBusy(false)
+    }
   }
-  return <main className={user ? 'app-shell' : 'auth-shell'}>
-    {loading ? <div className="loading-screen" role="status"><img src="/xennguard-icon.jpg" alt="" /><span>Loading XennGuard…</span></div> : user ? <>
-      <header className="app-header"><div className="brand"><img className="mark" src="/xennguard-icon.jpg" alt="" /><span>XennGuard</span></div><div className="header-right"><span className="preview-label"><i /> DEVELOPMENT PREVIEW</span><button className="signout" onClick={logout} disabled={busy}>Sign out <span aria-hidden="true">↗</span></button></div></header>
-      <div className="dashboard"><div className="dashboard-intro"><div><p className="eyebrow"><span className="eyebrow-dot" /> YOUR SPACE</p><h1>Good to see you, <span>{user.name}.</span></h1><p className="intro">A little more peace of mind, all in one place.</p></div><div className="account-pill"><span>{user.name.trim().slice(0, 1).toUpperCase()}</span><div><strong>{user.name}</strong><small>{user.email}</small></div></div></div>
-      {error && <p className="error banner-error" role="alert">{error}</p>}
-      <div className="dashboard-grid"><section className="devices"><div className="section-heading"><div><p className="eyebrow">YOUR CONNECTIONS</p><h2>Devices <span className="count">{devices === null ? '—' : devices.length}</span></h2></div><span className="section-note">Only devices you own</span></div>{devices === null ? <div className="empty" role="status">{error ? 'Devices could not be loaded.' : 'Loading your devices…'}</div> : devices.length === 0 ? <div className="empty empty-state"><div className="empty-icon" aria-hidden="true">⌁</div><h3>No devices connected yet</h3><p>Your devices will appear here after enrollment is available and the device owner approves.</p><span className="coming-pill">Enrollment in development</span></div> : <div className="grid">{devices.map(device => <DeviceCard key={device.id} device={device} onRevoked={() => setDevices(current => current?.map(item => item.id === device.id ? { ...item, enrollment_status: 'revoked' } : item) ?? null)} />)}</div>}</section>
-      <div className="side-column"><section className="enroll"><div className="side-icon" aria-hidden="true">＋</div><p className="eyebrow">GET CONNECTED</p><h2>Device enrollment</h2><p>Connect a device with its owner’s approval. The Android app requires a trusted HTTPS server.</p>{!challenge ? <button className="secondary" disabled={busy} onClick={newChallenge}>Create enrollment challenge <span aria-hidden="true">↗</span></button> : <div className="challenge"><p><strong>{challenge.enrollment_available ? 'Experimental enrollment is enabled.' : 'Enrollment is disabled on this server.'}</strong> This code expires {new Date(challenge.expires_at).toLocaleString()}. Share it only with the device owner.</p><label>Challenge ID<input readOnly value={challenge.id} /></label><label>Challenge secret<input readOnly value={challenge.token} /></label><button className="secondary" disabled={busy} onClick={cancelChallenge}>Cancel challenge</button></div>}</section>
-      <aside className="privacy-note"><span className="privacy-icon" aria-hidden="true">✳</span><div><strong>Made for care, built on consent.</strong><p>Remote assistance, recovery and MFA are still in development.</p></div></aside></div></div>
-      <footer><span>© XennGuard</span><span>Development preview</span></footer></div>
-    </> : <div className="auth-layout"><section className="auth-story"><div className="story-top"><div className="brand light"><img className="mark" src="/xennguard-icon.jpg" alt="" /><span>XennGuard</span></div><span className="story-edition">FAMILY DEVICE CARE <span> / </span> 01</span></div><div className="story-content"><p className="story-overline"><span /> CLOSER, EVEN FROM AFAR</p><h1>Care is always<br /><em>within reach.</em></h1><p>A thoughtful way to stay connected to the devices and people that matter most.</p></div><div className="story-art" aria-hidden="true"><img src="/xennguard-icon.jpg" alt="" /></div><div className="story-bottom"><div><span className="orbit">✳</span><p>For the people<br /><strong>you look out for.</strong></p></div><span>DESIGNED FOR CONNECTION&nbsp; ↗</span></div></section>
-    <section className="auth-main"><div className="auth-main-top"><span>YOUR SPACE, MADE SIMPLE</span><span className="preview-label"><i /> DEVELOPMENT PREVIEW</span></div><div className="auth-card"><div className="auth-icon" aria-hidden="true">✳</div><p className="eyebrow">WELCOME TO XENNGUARD</p><h2>{register ? 'Create your account.' : 'Welcome back.'}</h2><p className="auth-description">{register ? 'A little setup now, more peace of mind later.' : 'Sign in to keep the important things close.'}</p><form onSubmit={submit}>
-      {register && <label>Full name<input value={name} onChange={e => setName(e.target.value)} autoComplete="name" required maxLength={100} placeholder="Your name" /></label>}
-      <label>Email address<input type="email" value={email} onChange={e => setEmail(e.target.value)} autoComplete="email" required placeholder="you@example.com" /></label>
-      <label>Password<input type="password" value={password} onChange={e => setPassword(e.target.value)} autoComplete={register ? 'new-password' : 'current-password'} required minLength={register ? 12 : undefined} placeholder={register ? 'At least 12 characters' : 'Enter your password'} /></label>
-      {register && <label>Confirm password<input type="password" value={confirmation} onChange={e => setConfirmation(e.target.value)} autoComplete="new-password" required minLength={12} placeholder="Repeat your password" /></label>}
-      {error && <p className="error" role="alert">{error}</p>}<button className="primary" disabled={busy}><span>{busy ? 'Please wait…' : register ? 'Create account' : 'Sign in'}</span><span aria-hidden="true">↗</span></button></form>
-      <div className="auth-switch"><span>{register ? 'Already have an account?' : 'New to XennGuard?'}</span><button className="link" onClick={() => { setRegister(!register); setError('') }}>{register ? 'Sign in' : 'Create an account'} <span aria-hidden="true">→</span></button></div></div><div className="auth-footer"><span>© XennGuard</span><span>Thoughtful technology for everyday life.</span></div></section></div>}
-  </main>
+
+  if (loading) {
+    return (
+      <div
+        className="app-canvas"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+          gap: '18px',
+          background: 'var(--color-canvas-bg)',
+        }}
+        role="status"
+        aria-live="polite"
+      >
+        <div
+          className="brand-icon-box"
+          style={{
+            width: '56px',
+            height: '56px',
+            borderRadius: '14px',
+            boxShadow: '0 4px 16px rgba(27, 54, 38, 0.15)',
+          }}
+          aria-hidden="true"
+        >
+          <img src="/xennguard-icon.jpg" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        </div>
+        <span style={{ fontSize: '15px', color: 'var(--color-text-secondary)', fontWeight: 600 }}>
+          Initializing XennGuard Security Session...
+        </span>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return (
+      <AuthPage
+        onAuthenticated={(authenticatedUser) => {
+          setUser(authenticatedUser)
+          void loadDevices()
+        }}
+      />
+    )
+  }
+
+  return (
+    <div className="app-canvas" style={{ minHeight: '100vh', background: 'var(--color-canvas-bg)' }}>
+      {/* Floating Header Platter Navigation */}
+      <HeaderPlatter
+        user={user}
+        activeTab={activeTab}
+        onTabChange={(tab) => {
+          setActiveTab(tab)
+          setSelectedDevice(null)
+        }}
+        onPairDevice={handlePairDevice}
+        onSignOut={handleSignOut}
+        serverConnected={serverConnected}
+        busy={busy}
+      />
+
+      {/* Global Error Banner */}
+      {errorBanner && (
+        <div
+          role="alert"
+          style={{
+            maxWidth: '1280px',
+            margin: '96px auto 0',
+            padding: '12px 20px',
+            borderRadius: 'var(--radius-md)',
+            background: 'var(--color-status-critical-bg)',
+            border: '1px solid var(--color-status-critical-border)',
+            color: '#991B1B',
+            fontSize: '13px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <span>{errorBanner}</span>
+          <button
+            type="button"
+            onClick={() => setErrorBanner(null)}
+            style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', fontWeight: 600 }}
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {/* Active Tab View */}
+      {selectedDevice ? (
+        <DeviceDetailPage
+          device={selectedDevice}
+          onBack={() => {
+            setSelectedDevice(null)
+            loadDevices()
+          }}
+          onDeviceUpdated={(updated) => {
+            setSelectedDevice(updated)
+            setDevices((prev) => prev.map((d) => (d.id === updated.id ? updated : d)))
+          }}
+        />
+      ) : activeTab === 'audit' ? (
+        <div className="content-wrapper" style={{ paddingTop: '108px' }}>
+          <div
+            className="solid-card"
+            style={{
+              padding: '36px',
+              maxWidth: '860px',
+              margin: '0 auto',
+              background: '#FFFFFF',
+              border: '1px solid var(--color-surface-card-border)',
+              borderRadius: 'var(--radius-xl)',
+              boxShadow: 'var(--shadow-card)',
+            }}
+          >
+            <div
+              style={{
+                width: '48px',
+                height: '48px',
+                borderRadius: 'var(--radius-md)',
+                background: '#EAF2EB',
+                border: '1px solid #D3E3D6',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#275C37',
+                marginBottom: '16px',
+              }}
+              aria-hidden="true"
+            >
+              <ClipboardText size={24} weight="regular" />
+            </div>
+            <h2 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '6px', color: 'var(--color-text-primary)', letterSpacing: '-0.02em' }}>
+              Security Audit Logs
+            </h2>
+            <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', maxWidth: '520px', margin: '0 0 28px', lineHeight: 1.6 }}>
+              Cryptographically signed audit logs verifying token exchanges, challenge redemptions, and telemetry health synchronization.
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div
+                style={{
+                  padding: '14px 18px',
+                  background: '#F7FAF7',
+                  borderRadius: 'var(--radius-md)',
+                  border: '1px solid #DCE6DE',
+                  fontSize: '13px',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                  <span style={{ color: '#1A6E40', fontWeight: 700 }}>AUTH_LOGIN_SUCCESS</span>
+                  <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>Active Session</span>
+                </div>
+                <div style={{ fontSize: '13px', color: 'var(--color-text-secondary)' }}>
+                  User session authenticated for <strong>{user.email}</strong> via secure web session guard.
+                </div>
+              </div>
+
+              <div
+                style={{
+                  padding: '14px 18px',
+                  background: '#F7FAF7',
+                  borderRadius: 'var(--radius-md)',
+                  border: '1px solid #DCE6DE',
+                  fontSize: '13px',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                  <span style={{ color: '#275C37', fontWeight: 700 }}>TENANT_POLICY_VERIFIED</span>
+                  <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>Owner-Scoped</span>
+                </div>
+                <div style={{ fontSize: '13px', color: 'var(--color-text-secondary)' }}>
+                  Strict server-side device ownership and cross-tenant isolation policy enforced on all endpoints.
+                </div>
+              </div>
+
+              <div
+                style={{
+                  padding: '14px 18px',
+                  background: '#F7FAF7',
+                  borderRadius: 'var(--radius-md)',
+                  border: '1px solid #DCE6DE',
+                  fontSize: '13px',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                  <span style={{ color: '#23527C', fontWeight: 700 }}>TELEMETRY_INGESTION_READY</span>
+                  <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>Encrypted</span>
+                </div>
+                <div style={{ fontSize: '13px', color: 'var(--color-text-secondary)' }}>
+                  Hardware token bearer challenge validation active. Retention automated to 30 days.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : activeTab === 'settings' ? (
+        <div className="content-wrapper" style={{ paddingTop: '108px' }}>
+          <div
+            className="solid-card"
+            style={{
+              padding: '36px',
+              maxWidth: '680px',
+              margin: '0 auto',
+              background: '#FFFFFF',
+              border: '1px solid var(--color-surface-card-border)',
+              borderRadius: 'var(--radius-xl)',
+              boxShadow: 'var(--shadow-card)',
+            }}
+          >
+            <div
+              style={{
+                width: '48px',
+                height: '48px',
+                borderRadius: 'var(--radius-md)',
+                background: '#EAF2EB',
+                border: '1px solid #D3E3D6',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#275C37',
+                marginBottom: '16px',
+              }}
+              aria-hidden="true"
+            >
+              <Sliders size={24} weight="regular" />
+            </div>
+            <h2 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '6px', color: 'var(--color-text-primary)', letterSpacing: '-0.02em' }}>
+              Security & Workspace Settings
+            </h2>
+            <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', marginBottom: '28px', lineHeight: 1.6 }}>
+              Manage master credentials, cryptographic proof parameters, and mutual device consent policies.
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', fontSize: '13.5px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '14px 0', borderBottom: '1px solid #EDF3EE' }}>
+                <span style={{ color: 'var(--color-text-secondary)' }}>Master Account Name</span>
+                <strong style={{ color: 'var(--color-text-primary)' }}>{user.name}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '14px 0', borderBottom: '1px solid #EDF3EE' }}>
+                <span style={{ color: 'var(--color-text-secondary)' }}>Email Identity</span>
+                <strong style={{ color: 'var(--color-text-primary)' }}>{user.email}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '14px 0', borderBottom: '1px solid #EDF3EE' }}>
+                <span style={{ color: 'var(--color-text-secondary)' }}>Hardware Cryptographic Proofs</span>
+                <span style={{ color: '#1A6E40', fontWeight: 700 }}>Enforced (SHA256withRSA)</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '14px 0', borderBottom: '1px solid #EDF3EE' }}>
+                <span style={{ color: 'var(--color-text-secondary)' }}>Strict Zero-Emoji Directives</span>
+                <span style={{ color: '#1A6E40', fontWeight: 700 }}>Active (Phosphor Vector Icons)</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '14px 0' }}>
+                <span style={{ color: 'var(--color-text-secondary)' }}>Telemetry Retention Window</span>
+                <strong style={{ color: 'var(--color-text-primary)' }}>30 Days Automated Prune</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <DashboardPage
+          user={user}
+          devices={devices}
+          telemetryMap={telemetryMap}
+          onInspectDevice={(device) => setSelectedDevice(device)}
+          onRevokeDevice={handleRevokeDevice}
+          onPairDevice={handlePairDevice}
+          busy={busy}
+        />
+      )}
+
+      {/* Device Enrollment Modal */}
+      <EnrollmentModal
+        challenge={challenge}
+        isOpen={isEnrollmentOpen}
+        onClose={() => setIsEnrollmentOpen(false)}
+        onCancelChallenge={handleCancelChallenge}
+        busy={busy}
+      />
+    </div>
+  )
 }
+
 export default App

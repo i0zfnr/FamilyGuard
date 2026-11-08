@@ -1,0 +1,1661 @@
+[
+  {
+    "command": "frame.create",
+    "params": {
+      "name": "XennGuard - Telemetry Details (1440x900)",
+      "width": 1440,
+      "height": 900,
+      "x": 0,
+      "y": 0,
+      "props": {
+        "fill": "#0B0F19",
+        "clip": true
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "ellipse",
+      "parent": 2,
+      "name": "Ambient Depth Orb Left",
+      "x": -100,
+      "y": -100,
+      "width": 550,
+      "height": 550,
+      "props": {
+        "fill": "#1E293B",
+        "opacity": 0.45
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "ellipse",
+      "parent": 2,
+      "name": "Ambient Depth Orb Right",
+      "x": 950,
+      "y": 400,
+      "width": 600,
+      "height": 600,
+      "props": {
+        "fill": "#1E1B4B",
+        "opacity": 0.35
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Floating Glass Navigation Bar",
+      "x": 80,
+      "y": 28,
+      "width": 1280,
+      "height": 60,
+      "props": {
+        "fill": "#FFFFFF0D",
+        "stroke": "#FFFFFF26",
+        "strokeWeight": 1,
+        "cornerRadius": 30,
+        "effects": [
+          {
+            "type": "backgroundBlur",
+            "radius": 28
+          },
+          {
+            "type": "innerShadow",
+            "color": "#FFFFFF59",
+            "offset": [0, 1],
+            "radius": 2
+          },
+          {
+            "type": "dropShadow",
+            "color": "#00000040",
+            "offset": [0, 12],
+            "radius": 32
+          }
+        ]
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Brand Icon Platter",
+      "x": 104,
+      "y": 40,
+      "width": 36,
+      "height": 36,
+      "props": {
+        "fill": "#2563EB",
+        "cornerRadius": 10
+      }
+    }
+  },
+  {
+    "command": "vector.create",
+    "params": {
+      "parent": 2,
+      "name": "Shield Vector Icon",
+      "x": 114,
+      "y": 48,
+      "width": 16,
+      "height": 20,
+      "path": "M 8 0 L 16 4 V 10 C 16 15 12.5 18.5 8 20 C 3.5 18.5 0 15 0 10 V 4 Z",
+      "props": {
+        "fill": "#FFFFFF"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "XennGuard",
+      "x": 152,
+      "y": 44,
+      "props": {
+        "fontSize": 16,
+        "fontFamily": "Inter",
+        "fill": "#FFFFFF"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Family Device Security",
+      "x": 152,
+      "y": 64,
+      "props": {
+        "fontSize": 11,
+        "fontFamily": "Inter",
+        "fill": "#64748B"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Dashboard",
+      "x": 420,
+      "y": 50,
+      "props": {
+        "fontSize": 13,
+        "fontFamily": "Inter",
+        "fill": "#94A3B8"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Active Nav Pill",
+      "x": 512,
+      "y": 40,
+      "width": 88,
+      "height": 36,
+      "props": {
+        "fill": "#38BDF81A",
+        "stroke": "#38BDF84D",
+        "strokeWeight": 1,
+        "cornerRadius": 18
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Devices",
+      "x": 532,
+      "y": 50,
+      "props": {
+        "fontSize": 13,
+        "fontFamily": "Inter",
+        "fill": "#38BDF8"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Audit Trail",
+      "x": 624,
+      "y": 50,
+      "props": {
+        "fontSize": 13,
+        "fontFamily": "Inter",
+        "fill": "#94A3B8"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Policies",
+      "x": 724,
+      "y": 50,
+      "props": {
+        "fontSize": 13,
+        "fontFamily": "Inter",
+        "fill": "#94A3B8"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Sync Status Platter",
+      "x": 1090,
+      "y": 40,
+      "width": 140,
+      "height": 36,
+      "props": {
+        "fill": "#FFFFFF0D",
+        "stroke": "#FFFFFF1A",
+        "strokeWeight": 1,
+        "cornerRadius": 18
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "ellipse",
+      "parent": 2,
+      "name": "Live Pulse Dot",
+      "x": 1106,
+      "y": 54,
+      "width": 8,
+      "height": 8,
+      "props": {
+        "fill": "#10B981"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Live Sync Active",
+      "x": 1122,
+      "y": 50,
+      "props": {
+        "fontSize": 12,
+        "fontFamily": "Inter",
+        "fill": "#10B981"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "User Initials Platter",
+      "x": 1242,
+      "y": 40,
+      "width": 36,
+      "height": 36,
+      "props": {
+        "fill": "#1E293B",
+        "stroke": "#334155",
+        "strokeWeight": 1,
+        "cornerRadius": 18
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "IH",
+      "x": 1253,
+      "y": 50,
+      "props": {
+        "fontSize": 12,
+        "fontFamily": "Inter",
+        "fill": "#F8FAFC"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Devices  /  Pixel 8 Pro (Sarah)  /  Telemetry & Hardware Proofs",
+      "x": 80,
+      "y": 112,
+      "props": {
+        "fontSize": 13,
+        "fontFamily": "Inter",
+        "fill": "#94A3B8"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Telemetry & Health Analytics",
+      "x": 80,
+      "y": 136,
+      "props": {
+        "fontSize": 28,
+        "fontFamily": "Inter",
+        "fill": "#F8FAFC"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Hardware Verified Pill",
+      "x": 520,
+      "y": 138,
+      "width": 240,
+      "height": 32,
+      "props": {
+        "fill": "#10B9811A",
+        "stroke": "#10B9814D",
+        "strokeWeight": 1,
+        "cornerRadius": 16
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "ellipse",
+      "parent": 2,
+      "name": "Verified Shield Dot",
+      "x": 536,
+      "y": 150,
+      "width": 8,
+      "height": 8,
+      "props": {
+        "fill": "#10B981"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Hardware RSA-4096 Verified",
+      "x": 552,
+      "y": 146,
+      "props": {
+        "fontSize": 12,
+        "fontFamily": "Inter",
+        "fill": "#10B981"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Time Filter Pill",
+      "x": 1160,
+      "y": 136,
+      "width": 200,
+      "height": 34,
+      "props": {
+        "fill": "#1E293B",
+        "stroke": "#334155",
+        "strokeWeight": 1,
+        "cornerRadius": 17
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Past 24 Hours (1h sync)",
+      "x": 1184,
+      "y": 145,
+      "props": {
+        "fontSize": 12,
+        "fontFamily": "Inter",
+        "fill": "#94A3B8"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Metric Card 1 - Battery",
+      "x": 80,
+      "y": 192,
+      "width": 302,
+      "height": 96,
+      "props": {
+        "fill": "#111827",
+        "stroke": "#1F293D",
+        "strokeWeight": 1,
+        "cornerRadius": 16
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Battery Status",
+      "x": 104,
+      "y": 208,
+      "props": {
+        "fontSize": 12,
+        "fontFamily": "Inter",
+        "fill": "#94A3B8"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "84%",
+      "x": 104,
+      "y": 228,
+      "props": {
+        "fontSize": 24,
+        "fontFamily": "Inter",
+        "fill": "#10B981"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Discharging · 14h 20m left",
+      "x": 104,
+      "y": 260,
+      "props": {
+        "fontSize": 12,
+        "fontFamily": "Inter",
+        "fill": "#64748B"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Metric Card 2 - Storage",
+      "x": 406,
+      "y": 192,
+      "width": 302,
+      "height": 96,
+      "props": {
+        "fill": "#111827",
+        "stroke": "#1F293D",
+        "strokeWeight": 1,
+        "cornerRadius": 16
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Storage Available",
+      "x": 430,
+      "y": 208,
+      "props": {
+        "fontSize": 12,
+        "fontFamily": "Inter",
+        "fill": "#94A3B8"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "79.8 GB",
+      "x": 430,
+      "y": 228,
+      "props": {
+        "fontSize": 24,
+        "fontFamily": "Inter",
+        "fill": "#38BDF8"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "37.6% used of 128.0 GB total",
+      "x": 430,
+      "y": 260,
+      "props": {
+        "fontSize": 12,
+        "fontFamily": "Inter",
+        "fill": "#64748B"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Metric Card 3 - Network",
+      "x": 732,
+      "y": 192,
+      "width": 302,
+      "height": 96,
+      "props": {
+        "fill": "#111827",
+        "stroke": "#1F293D",
+        "strokeWeight": 1,
+        "cornerRadius": 16
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Uplink & Network",
+      "x": 756,
+      "y": 208,
+      "props": {
+        "fontSize": 12,
+        "fontFamily": "Inter",
+        "fill": "#94A3B8"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Wi-Fi 6",
+      "x": 756,
+      "y": 228,
+      "props": {
+        "fontSize": 24,
+        "fontFamily": "Inter",
+        "fill": "#F8FAFC"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Home-Mesh · -52 dBm strong",
+      "x": 756,
+      "y": 260,
+      "props": {
+        "fontSize": 12,
+        "fontFamily": "Inter",
+        "fill": "#64748B"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Metric Card 4 - Heartbeat",
+      "x": 1058,
+      "y": 192,
+      "width": 302,
+      "height": 96,
+      "props": {
+        "fill": "#111827",
+        "stroke": "#1F293D",
+        "strokeWeight": 1,
+        "cornerRadius": 16
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Last Agent Heartbeat",
+      "x": 1082,
+      "y": 208,
+      "props": {
+        "fontSize": 12,
+        "fontFamily": "Inter",
+        "fill": "#94A3B8"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "42s ago",
+      "x": 1082,
+      "y": 228,
+      "props": {
+        "fontSize": 24,
+        "fontFamily": "Inter",
+        "fill": "#F8FAFC"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Audit sequence #4,812 · No anomalies",
+      "x": 1082,
+      "y": 260,
+      "props": {
+        "fontSize": 12,
+        "fontFamily": "Inter",
+        "fill": "#64748B"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Battery Trend Chart Container",
+      "x": 80,
+      "y": 308,
+      "width": 820,
+      "height": 444,
+      "props": {
+        "fill": "#111827",
+        "stroke": "#1F293D",
+        "strokeWeight": 1,
+        "cornerRadius": 20
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Battery Discharge & Charging Cycles (24h)",
+      "x": 108,
+      "y": 332,
+      "props": {
+        "fontSize": 18,
+        "fontFamily": "Inter",
+        "fill": "#F8FAFC"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Sampled at 15-minute intervals via Android WorkManager background scheduler",
+      "x": 108,
+      "y": 358,
+      "props": {
+        "fontSize": 12,
+        "fontFamily": "Inter",
+        "fill": "#94A3B8"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "100%",
+      "x": 108,
+      "y": 400,
+      "props": {
+        "fontSize": 11,
+        "fontFamily": "Inter",
+        "fill": "#64748B"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "75%",
+      "x": 108,
+      "y": 460,
+      "props": {
+        "fontSize": 11,
+        "fontFamily": "Inter",
+        "fill": "#64748B"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "50%",
+      "x": 108,
+      "y": 520,
+      "props": {
+        "fontSize": 11,
+        "fontFamily": "Inter",
+        "fill": "#64748B"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "25%",
+      "x": 108,
+      "y": 580,
+      "props": {
+        "fontSize": 11,
+        "fontFamily": "Inter",
+        "fill": "#64748B"
+      }
+    }
+  },
+  {
+    "command": "shape.line",
+    "params": {
+      "parent": 2,
+      "name": "Grid Line 100",
+      "x": 145,
+      "y": 407,
+      "width": 725,
+      "props": {
+        "stroke": "#1E293B",
+        "strokeWeight": 1
+      }
+    }
+  },
+  {
+    "command": "shape.line",
+    "params": {
+      "parent": 2,
+      "name": "Grid Line 75",
+      "x": 145,
+      "y": 467,
+      "width": 725,
+      "props": {
+        "stroke": "#1E293B",
+        "strokeWeight": 1
+      }
+    }
+  },
+  {
+    "command": "shape.line",
+    "params": {
+      "parent": 2,
+      "name": "Grid Line 50",
+      "x": 145,
+      "y": 527,
+      "width": 725,
+      "props": {
+        "stroke": "#1E293B",
+        "strokeWeight": 1
+      }
+    }
+  },
+  {
+    "command": "shape.line",
+    "params": {
+      "parent": 2,
+      "name": "Grid Line 25",
+      "x": 145,
+      "y": 587,
+      "width": 725,
+      "props": {
+        "stroke": "#1E293B",
+        "strokeWeight": 1
+      }
+    }
+  },
+  {
+    "command": "shape.line",
+    "params": {
+      "parent": 2,
+      "name": "Grid Line 0",
+      "x": 145,
+      "y": 647,
+      "width": 725,
+      "props": {
+        "stroke": "#1E293B",
+        "strokeWeight": 1
+      }
+    }
+  },
+  {
+    "command": "vector.create",
+    "params": {
+      "parent": 2,
+      "name": "Battery Trend Shaded Area",
+      "x": 145,
+      "y": 415,
+      "width": 700,
+      "height": 232,
+      "path": "M 0 232 L 0 20 L 80 35 L 160 70 L 240 60 L 320 140 L 380 125 L 460 10 L 540 25 L 620 45 L 700 32 L 700 232 Z",
+      "props": {
+        "fill": "#10B98114"
+      }
+    }
+  },
+  {
+    "command": "vector.create",
+    "params": {
+      "parent": 2,
+      "name": "Battery Trend Discharge Polyline",
+      "x": 145,
+      "y": 415,
+      "width": 700,
+      "height": 140,
+      "path": "M 0 20 C 40 25 60 30 80 35 C 120 50 140 65 160 70 C 200 65 220 55 240 60 C 280 100 300 130 320 140 C 350 135 365 130 380 125 C 420 40 440 15 460 10 C 500 15 520 20 540 25 C 580 35 600 40 620 45 C 660 38 680 34 700 32",
+      "props": {
+        "stroke": "#10B981",
+        "strokeWeight": 3
+      }
+    }
+  },
+  {
+    "command": "vector.create",
+    "params": {
+      "parent": 2,
+      "name": "Battery Fast Charging Segment",
+      "x": 525,
+      "y": 425,
+      "width": 80,
+      "height": 115,
+      "path": "M 0 115 C 40 30 60 5 80 0",
+      "props": {
+        "stroke": "#38BDF8",
+        "strokeWeight": 3
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "ellipse",
+      "parent": 2,
+      "name": "Current Reading Outer Halo",
+      "x": 839,
+      "y": 441,
+      "width": 12,
+      "height": 12,
+      "props": {
+        "fill": "#10B98133",
+        "stroke": "#10B981",
+        "strokeWeight": 2
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "ellipse",
+      "parent": 2,
+      "name": "Current Reading Center Dot",
+      "x": 842,
+      "y": 444,
+      "width": 6,
+      "height": 6,
+      "props": {
+        "fill": "#FFFFFF"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Latest Reading Tooltip Platter",
+      "x": 730,
+      "y": 395,
+      "width": 136,
+      "height": 34,
+      "props": {
+        "fill": "#1E293B",
+        "stroke": "#334155",
+        "strokeWeight": 1,
+        "cornerRadius": 8,
+        "effects": [
+          {
+            "type": "dropShadow",
+            "color": "#0000004D",
+            "offset": [0, 4],
+            "radius": 12
+          }
+        ]
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Now: 84% · Discharging",
+      "x": 742,
+      "y": 406,
+      "props": {
+        "fontSize": 11,
+        "fontFamily": "Inter",
+        "fill": "#F8FAFC"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "00:00",
+      "x": 140,
+      "y": 662,
+      "props": {
+        "fontSize": 11,
+        "fontFamily": "Inter",
+        "fill": "#64748B"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "04:00",
+      "x": 260,
+      "y": 662,
+      "props": {
+        "fontSize": 11,
+        "fontFamily": "Inter",
+        "fill": "#64748B"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "08:00",
+      "x": 380,
+      "y": 662,
+      "props": {
+        "fontSize": 11,
+        "fontFamily": "Inter",
+        "fill": "#64748B"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "12:00",
+      "x": 500,
+      "y": 662,
+      "props": {
+        "fontSize": 11,
+        "fontFamily": "Inter",
+        "fill": "#64748B"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "16:00",
+      "x": 620,
+      "y": 662,
+      "props": {
+        "fontSize": 11,
+        "fontFamily": "Inter",
+        "fill": "#64748B"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "20:00",
+      "x": 740,
+      "y": 662,
+      "props": {
+        "fontSize": 11,
+        "fontFamily": "Inter",
+        "fill": "#64748B"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Now",
+      "x": 836,
+      "y": 662,
+      "props": {
+        "fontSize": 11,
+        "fontFamily": "Inter",
+        "fill": "#38BDF8"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Battery health: Good (97% design capacity preserved) · Thermal profile: 29.4°C nominal",
+      "x": 108,
+      "y": 708,
+      "props": {
+        "fontSize": 12,
+        "fontFamily": "Inter",
+        "fill": "#64748B"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Storage Allocation Container",
+      "x": 924,
+      "y": 308,
+      "width": 436,
+      "height": 210,
+      "props": {
+        "fill": "#111827",
+        "stroke": "#1F293D",
+        "strokeWeight": 1,
+        "cornerRadius": 20
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Storage Partition Allocation",
+      "x": 948,
+      "y": 332,
+      "props": {
+        "fontSize": 16,
+        "fontFamily": "Inter",
+        "fill": "#F8FAFC"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Total: 128.0 GB · Available: 79.8 GB (62.4%)",
+      "x": 948,
+      "y": 356,
+      "props": {
+        "fontSize": 12,
+        "fontFamily": "Inter",
+        "fill": "#94A3B8"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Storage Track Base",
+      "x": 948,
+      "y": 388,
+      "width": 388,
+      "height": 18,
+      "props": {
+        "fill": "#1E293B",
+        "cornerRadius": 9
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Storage Segment System",
+      "x": 948,
+      "y": 388,
+      "width": 62,
+      "height": 18,
+      "props": {
+        "fill": "#64748B",
+        "cornerRadius": 9
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Storage Segment Apps",
+      "x": 1010,
+      "y": 388,
+      "width": 52,
+      "height": 18,
+      "props": {
+        "fill": "#2563EB"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Storage Segment Media",
+      "x": 1062,
+      "y": 388,
+      "width": 34,
+      "height": 18,
+      "props": {
+        "fill": "#38BDF8"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Legend Dot System",
+      "x": 948,
+      "y": 426,
+      "width": 10,
+      "height": 10,
+      "props": {
+        "fill": "#64748B",
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "System OS: 20.4 GB (16%)",
+      "x": 966,
+      "y": 424,
+      "props": {
+        "fontSize": 12,
+        "fontFamily": "Inter",
+        "fill": "#94A3B8"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Legend Dot Apps",
+      "x": 1150,
+      "y": 426,
+      "width": 10,
+      "height": 10,
+      "props": {
+        "fill": "#2563EB",
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Apps: 16.8 GB (13%)",
+      "x": 1168,
+      "y": 424,
+      "props": {
+        "fontSize": 12,
+        "fontFamily": "Inter",
+        "fill": "#94A3B8"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Legend Dot Media",
+      "x": 948,
+      "y": 454,
+      "width": 10,
+      "height": 10,
+      "props": {
+        "fill": "#38BDF8",
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Media: 11.0 GB (9%)",
+      "x": 966,
+      "y": 452,
+      "props": {
+        "fontSize": 12,
+        "fontFamily": "Inter",
+        "fill": "#94A3B8"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Legend Dot Free",
+      "x": 1150,
+      "y": 454,
+      "width": 10,
+      "height": 10,
+      "props": {
+        "fill": "#10B981",
+        "cornerRadius": 3
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Free: 79.8 GB (62%)",
+      "x": 1168,
+      "y": 452,
+      "props": {
+        "fontSize": 12,
+        "fontFamily": "Inter",
+        "fill": "#10B981"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Encrypted via Android File-Based Encryption (FBE)",
+      "x": 948,
+      "y": 484,
+      "props": {
+        "fontSize": 11,
+        "fontFamily": "Inter",
+        "fill": "#64748B"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Network Connectivity Container",
+      "x": 924,
+      "y": 534,
+      "width": 436,
+      "height": 218,
+      "props": {
+        "fill": "#111827",
+        "stroke": "#1F293D",
+        "strokeWeight": 1,
+        "cornerRadius": 20
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Network Connectivity History",
+      "x": 948,
+      "y": 558,
+      "props": {
+        "fontSize": 16,
+        "fontFamily": "Inter",
+        "fill": "#F8FAFC"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Authenticated uplink events via TLS 1.3 certificate pinning",
+      "x": 948,
+      "y": 582,
+      "props": {
+        "fontSize": 12,
+        "fontFamily": "Inter",
+        "fill": "#94A3B8"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Network Row 1",
+      "x": 948,
+      "y": 606,
+      "width": 388,
+      "height": 34,
+      "props": {
+        "fill": "#0A0E17",
+        "stroke": "#1E293B",
+        "strokeWeight": 1,
+        "cornerRadius": 8
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "ellipse",
+      "parent": 2,
+      "name": "Net Dot 1",
+      "x": 960,
+      "y": 619,
+      "width": 8,
+      "height": 8,
+      "props": {
+        "fill": "#10B981"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Wi-Fi (Home-Mesh) · 866 Mbps · Pinned",
+      "x": 978,
+      "y": 616,
+      "props": {
+        "fontSize": 12,
+        "fontFamily": "Inter",
+        "fill": "#F8FAFC"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "14:48:10",
+      "x": 1276,
+      "y": 616,
+      "props": {
+        "fontSize": 11,
+        "fontFamily": "Inter",
+        "fill": "#64748B"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Network Row 2",
+      "x": 948,
+      "y": 646,
+      "width": 388,
+      "height": 34,
+      "props": {
+        "fill": "#0A0E17",
+        "stroke": "#1E293B",
+        "strokeWeight": 1,
+        "cornerRadius": 8
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "ellipse",
+      "parent": 2,
+      "name": "Net Dot 2",
+      "x": 960,
+      "y": 659,
+      "width": 8,
+      "height": 8,
+      "props": {
+        "fill": "#38BDF8"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Cellular 5G (LTE/NR) · 120 Mbps",
+      "x": 978,
+      "y": 656,
+      "props": {
+        "fontSize": 12,
+        "fontFamily": "Inter",
+        "fill": "#94A3B8"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "11:20:04",
+      "x": 1276,
+      "y": 656,
+      "props": {
+        "fontSize": 11,
+        "fontFamily": "Inter",
+        "fill": "#64748B"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Network Row 3",
+      "x": 948,
+      "y": 686,
+      "width": 388,
+      "height": 34,
+      "props": {
+        "fill": "#0A0E17",
+        "stroke": "#1E293B",
+        "strokeWeight": 1,
+        "cornerRadius": 8
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "ellipse",
+      "parent": 2,
+      "name": "Net Dot 3",
+      "x": 960,
+      "y": 699,
+      "width": 8,
+      "height": 8,
+      "props": {
+        "fill": "#10B981"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Wi-Fi (School-Secure) · 144 Mbps · Pinned",
+      "x": 978,
+      "y": 696,
+      "props": {
+        "fontSize": 12,
+        "fontFamily": "Inter",
+        "fill": "#94A3B8"
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "08:15:32",
+      "x": 1276,
+      "y": 696,
+      "props": {
+        "fontSize": 11,
+        "fontFamily": "Inter",
+        "fill": "#64748B"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Bottom Floating Glass Action Strip",
+      "x": 80,
+      "y": 772,
+      "width": 1280,
+      "height": 56,
+      "props": {
+        "fill": "#FFFFFF0D",
+        "stroke": "#FFFFFF26",
+        "strokeWeight": 1,
+        "cornerRadius": 28,
+        "effects": [
+          {
+            "type": "backgroundBlur",
+            "radius": 28
+          },
+          {
+            "type": "innerShadow",
+            "color": "#FFFFFF40",
+            "offset": [0, 1],
+            "radius": 2
+          },
+          {
+            "type": "dropShadow",
+            "color": "#00000040",
+            "offset": [0, 8],
+            "radius": 24
+          }
+        ]
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Cryptographic device identity verified · Zero covert tracking active",
+      "x": 110,
+      "y": 792,
+      "props": {
+        "fontSize": 13,
+        "fontFamily": "Inter",
+        "fill": "#94A3B8"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Sync Ping Button",
+      "x": 860,
+      "y": 782,
+      "width": 160,
+      "height": 36,
+      "props": {
+        "fill": "#1E293B",
+        "stroke": "#334155",
+        "strokeWeight": 1,
+        "cornerRadius": 10
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Request Sync Ping",
+      "x": 884,
+      "y": 792,
+      "props": {
+        "fontSize": 12,
+        "fontFamily": "Inter",
+        "fill": "#F8FAFC"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Export CSV Button",
+      "x": 1032,
+      "y": 782,
+      "width": 170,
+      "height": 36,
+      "props": {
+        "fill": "#2563EB",
+        "cornerRadius": 10
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Export Telemetry CSV",
+      "x": 1052,
+      "y": 792,
+      "props": {
+        "fontSize": 12,
+        "fontFamily": "Inter",
+        "fill": "#FFFFFF"
+      }
+    }
+  },
+  {
+    "command": "node.create",
+    "params": {
+      "type": "rectangle",
+      "parent": 2,
+      "name": "Revoke Button Pill",
+      "x": 1214,
+      "y": 782,
+      "width": 124,
+      "height": 36,
+      "props": {
+        "fill": "#EF44441A",
+        "stroke": "#EF44444D",
+        "strokeWeight": 1,
+        "cornerRadius": 10
+      }
+    }
+  },
+  {
+    "command": "text.create",
+    "params": {
+      "parent": 2,
+      "text": "Revoke Device",
+      "x": 1234,
+      "y": 792,
+      "props": {
+        "fontSize": 12,
+        "fontFamily": "Inter",
+        "fill": "#EF4444"
+      }
+    }
+  }
+]
