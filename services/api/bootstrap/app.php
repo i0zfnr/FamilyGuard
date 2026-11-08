@@ -24,7 +24,7 @@ return Application::configure(basePath: $apiPath)
         );
     })->create()
     ->useConfigPath($apiPath.'/config')
-    ->useBootstrapPath($apiPath.'/bootstrap')
+    ->useBootstrapPath($projectPath.'/bootstrap')
     ->useDatabasePath($apiPath.'/database')
     ->usePublicPath($projectPath.'/public')
-    ->useStoragePath($apiPath.'/storage');
+    ->useStoragePath($projectPath.'/storage');
