@@ -79,3 +79,9 @@ Android debug build and unit tests, plus web build and lint, passed after the br
 - Web production build and lint passed. Desktop and mobile sign-in layouts were visually inspected. Android debug build and unit tests passed; Android visuals were not inspected on hardware. Internationalization, real-device testing and production readiness remain outstanding.
 
 - Softened the supplied artwork edges on the sign-in panel to remove the visible rectangular boundary. Web build and lint passed; no browser screenshot was verified for this change.
+
+## Ryaze deployment investigation
+
+- Ryaze project `xennguard.ryz.my.id` reported a Git clone failure because it requested `main` while only `master` existed. Created `origin/main` at the same commit as `origin/master` without modifying either branch's existing history.
+- Ryaze's Laravel builder operates from the repository root; the app is under `services/api`, and the React build is separate. The root layout, production settings, database and public app have not been validated. No redeployment was triggered.
+- The API's AGENTS.md requires Laravel Boost setup before application changes. Composer package installation stalled during optimized autoload generation, so the attempted dependency changes were reverted. Boost setup remains incomplete.
