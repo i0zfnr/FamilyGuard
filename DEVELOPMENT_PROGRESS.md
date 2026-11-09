@@ -140,3 +140,28 @@ Android debug build and unit tests, plus web build and lint, passed after the br
 - FigCraft Prototype: Updated `prototypes/dashboard.figcraft` with docked obsidian sidebar and porcelain feed (70 layers, root frame `id: 199`, 1440x900) and generated screenshot artifact `xennguard_docked_sidebar_v3.png`.
 - Automated Verification: 100% test pass rate on Vitest suite (32/32 tests passed across 5 test suites). Production build compiled cleanly via `tsc -b && vite build` (`index-Bvsu75IW.js`, `index-BtmVPA4y.css`) and synced to `public/assets/` and `public/index.html`.
 
+
+## Full-project docked sidebar & Android APK redesign (2026-11-09)
+
+- **Web Workspace Overhaul**:
+  - Implemented a 260px docked obsidian (`#0A0E0C`) sidebar matching reference specifications, with live navigation across `Devices`, `Activity`, `Security`, and `Settings`.
+  - Added full functionality to previously unrouted views:
+    - `ActivityPage`: Cryptographic audit journal with SHA-256 hash inspection, category filtering, search, and JSON export.
+    - `SecurityPage`: Hardware proof posture (SHA256withRSA, zero covert tracking, single-use challenges) and enrolled key registry with revocation.
+    - `SettingsPage`: Master workspace credentials, QR pairing proximity toggle, retention settings, and session control.
+  - Verification: 32 Vitest unit and integration tests passed across 5 test suites. Vite 8 production build compiled cleanly.
+
+- **Android APK Redesign & Compilation**:
+  - Elevated the Android app (`apps/android`) with Jetpack Compose using the authentic XennGuard porcelain/forest-pine design system (`XennPalette`), adhering strictly to the zero-emoji policy and using vector icons throughout.
+  - Implemented `XennHeader` platter with dove brandmark, editorial typography, and live active/setup status pill.
+  - Redesigned `MainActivity`:
+    - Setup state: Quick QR pairing payload autofill, cryptographic parameter inspection, and 3-point informed consent checklist.
+    - Active state: Live hardware fuel gauge (battery %), encrypted volume (storage free/total), network interface, manual sync CTA, and enrollment revocation.
+    - Persistent notification and zero covert surveillance trust statement.
+  - Redesigned `AdminActivity`: Master sign-in card, fleet browser with platform tags and revocation status, and session controls.
+  - Configured 4GB JVM heap (`-Xmx4096m`) in `gradle.properties` for D8 dexing.
+  - Verification: `.\gradlew.bat testDebugUnitTest` and `.\gradlew.bat assembleDebug` passed without errors or warnings. Generated `app-debug.apk` (20 MB) at `apps/android/app/build/outputs/apk/debug/app-debug.apk`.
+
+- **Deployment & Remote Sync**:
+  - Pushed all changes to both `origin/master` and `origin/main` (`commit 426c956`).
+  - Verified Ryaze public endpoint: `https://xennguard.ryz.my.id` returns `HTTP 200 OK` (Cloudflare dynamic cache).
