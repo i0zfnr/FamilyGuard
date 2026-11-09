@@ -1,0 +1,562 @@
+{
+  "proofs_audit": {
+    "auth.png": {
+      "status": "PASS",
+      "file_size_bytes": 435313,
+      "width": 2880,
+      "height": 1800,
+      "expected_width": 2880,
+      "expected_height": 1800,
+      "scale": 2,
+      "bit_depth": 8,
+      "color_type": 6,
+      "idat_bytes": 435243,
+      "has_iend": true,
+      "chunks": [
+        "IHDR",
+        "sRGB",
+        "IDAT",
+        "IEND"
+      ]
+    },
+    "dashboard.png": {
+      "status": "PASS",
+      "file_size_bytes": 584695,
+      "width": 2880,
+      "height": 1800,
+      "expected_width": 2880,
+      "expected_height": 1800,
+      "scale": 2,
+      "bit_depth": 8,
+      "color_type": 6,
+      "idat_bytes": 584625,
+      "has_iend": true,
+      "chunks": [
+        "IHDR",
+        "sRGB",
+        "IDAT",
+        "IEND"
+      ]
+    },
+    "enrollment_modal.png": {
+      "status": "PASS",
+      "file_size_bytes": 279603,
+      "width": 1200,
+      "height": 1000,
+      "expected_width": 1200,
+      "expected_height": 1000,
+      "scale": 2,
+      "bit_depth": 8,
+      "color_type": 6,
+      "idat_bytes": 279533,
+      "has_iend": true,
+      "chunks": [
+        "IHDR",
+        "sRGB",
+        "IDAT",
+        "IEND"
+      ]
+    },
+    "mobile_dashboard.png": {
+      "status": "PASS",
+      "file_size_bytes": 289317,
+      "width": 780,
+      "height": 1688,
+      "expected_width": 780,
+      "expected_height": 1688,
+      "scale": 2,
+      "bit_depth": 8,
+      "color_type": 6,
+      "idat_bytes": 289247,
+      "has_iend": true,
+      "chunks": [
+        "IHDR",
+        "sRGB",
+        "IDAT",
+        "IEND"
+      ]
+    },
+    "telemetry.png": {
+      "status": "PASS",
+      "file_size_bytes": 582922,
+      "width": 2880,
+      "height": 1800,
+      "expected_width": 2880,
+      "expected_height": 1800,
+      "scale": 2,
+      "bit_depth": 8,
+      "color_type": 6,
+      "idat_bytes": 582852,
+      "has_iend": true,
+      "chunks": [
+        "IHDR",
+        "sRGB",
+        "IDAT",
+        "IEND"
+      ]
+    }
+  },
+  "prototypes_audit": {
+    "auth.figcraft": {
+      "status": "PASS",
+      "file_size_bytes": 33411,
+      "zip_contents": [
+        "document.json",
+        "thumbnail.png"
+      ],
+      "cli_total_nodes": 49,
+      "cli_pages": 1,
+      "frames": [
+        {
+          "id": 2,
+          "name": "XennGuard - Auth Desktop (1440x900)",
+          "w": 1440.0,
+          "h": 900.0
+        }
+      ]
+    },
+    "dashboard.figcraft": {
+      "status": "PASS",
+      "file_size_bytes": 48192,
+      "zip_contents": [
+        "document.json",
+        "thumbnail.png"
+      ],
+      "cli_total_nodes": 146,
+      "cli_pages": 1,
+      "frames": [
+        {
+          "id": 2,
+          "name": "XennGuard - Desktop Dashboard (1440x900)",
+          "w": 1440.0,
+          "h": 900.0
+        }
+      ]
+    },
+    "enrollment_modal.figcraft": {
+      "status": "PASS",
+      "file_size_bytes": 70738,
+      "zip_contents": [
+        "document.json",
+        "thumbnail.png"
+      ],
+      "cli_total_nodes": 55,
+      "cli_pages": 1,
+      "frames": [
+        {
+          "id": 2,
+          "name": "XennGuard - Enrollment Modal (600x500)",
+          "w": 600.0,
+          "h": 500.0
+        }
+      ]
+    },
+    "mobile_dashboard.figcraft": {
+      "status": "PASS",
+      "file_size_bytes": 47365,
+      "zip_contents": [
+        "document.json",
+        "thumbnail.png"
+      ],
+      "cli_total_nodes": 68,
+      "cli_pages": 1,
+      "frames": [
+        {
+          "id": 2,
+          "name": "XennGuard - Mobile Dashboard (390x844)",
+          "w": 390.0,
+          "h": 844.0
+        }
+      ]
+    },
+    "telemetry.figcraft": {
+      "status": "PASS",
+      "file_size_bytes": 43386,
+      "zip_contents": [
+        "document.json",
+        "thumbnail.png"
+      ],
+      "cli_total_nodes": 108,
+      "cli_pages": 1,
+      "frames": [
+        {
+          "id": 2,
+          "name": "XennGuard - Telemetry Details (1440x900)",
+          "w": 1440.0,
+          "h": 900.0
+        }
+      ]
+    }
+  },
+  "scripts_audit": {
+    "auth_screen.json": {
+      "status": "PASS",
+      "total_commands": 48,
+      "command_breakdown": {
+        "frame.create": 1,
+        "node.create": 18,
+        "vector.create": 6,
+        "text.create": 23,
+        "shape.line": 0
+      },
+      "frame_dimensions": {
+        "width": 1440,
+        "height": 900,
+        "name": "XennGuard - Auth Desktop (1440x900)"
+      },
+      "vector_count": 6,
+      "invalid_vectors": [],
+      "sample_vectors": [
+        {
+          "name": "Brand Shield Vector",
+          "path_len": 135,
+          "path_sample": "M12 2L4 5.5v6.2c0 5.2 3.4 10.1 8 11.3 4...."
+        },
+        {
+          "name": "Card 1 Vector Icon",
+          "path_len": 49,
+          "path_sample": "M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1..."
+        },
+        {
+          "name": "Card 2 Vector Icon",
+          "path_len": 225,
+          "path_sample": "M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v..."
+        },
+        {
+          "name": "Card 3 Vector Icon",
+          "path_len": 122,
+          "path_sample": "M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-..."
+        }
+      ],
+      "suspicious_terms_in_text": [],
+      "sample_ui_texts": [
+        "XennGuard",
+        "Family Device Protection",
+        "Security Core Active",
+        "TRANSPARENT DEVICE CARE",
+        "Care is always\nwithin reach."
+      ]
+    },
+    "dashboard_screen.json": {
+      "status": "PASS",
+      "total_commands": 145,
+      "command_breakdown": {
+        "frame.create": 1,
+        "node.create": 54,
+        "vector.create": 23,
+        "text.create": 67,
+        "shape.line": 0
+      },
+      "frame_dimensions": {
+        "width": 1440,
+        "height": 900,
+        "name": "XennGuard - Desktop Dashboard (1440x900)"
+      },
+      "vector_count": 23,
+      "invalid_vectors": [],
+      "sample_vectors": [
+        {
+          "name": "Brand Shield Vector",
+          "path_len": 135,
+          "path_sample": "M12 2L4 5.5v6.2c0 5.2 3.4 10.1 8 11.3 4...."
+        },
+        {
+          "name": "Plus Vector Icon",
+          "path_len": 35,
+          "path_sample": "M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"
+        },
+        {
+          "name": "Metric Shield Icon",
+          "path_len": 135,
+          "path_sample": "M12 2L4 5.5v6.2c0 5.2 3.4 10.1 8 11.3 4...."
+        },
+        {
+          "name": "Card 1 Phone Icon",
+          "path_len": 157,
+          "path_sample": "M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 ..."
+        }
+      ],
+      "suspicious_terms_in_text": [],
+      "sample_ui_texts": [
+        "XennGuard",
+        "Dashboard",
+        "Devices",
+        "Telemetry",
+        "Audit Logs"
+      ]
+    },
+    "enrollment_modal.json": {
+      "status": "PASS",
+      "total_commands": 54,
+      "command_breakdown": {
+        "frame.create": 1,
+        "node.create": 35,
+        "vector.create": 2,
+        "text.create": 16,
+        "shape.line": 0
+      },
+      "frame_dimensions": {
+        "width": 600,
+        "height": 500,
+        "name": "XennGuard - Enrollment Modal (600x500)"
+      },
+      "vector_count": 2,
+      "invalid_vectors": [],
+      "sample_vectors": [
+        {
+          "name": "Modal Shield Vector Icon",
+          "path_len": 67,
+          "path_sample": "M 8 0 L 16 4 V 10 C 16 15 12.5 18.5 8 20..."
+        },
+        {
+          "name": "Consent Checkmark Vector",
+          "path_len": 18,
+          "path_sample": "M 1 5 L 4 9 L 11 1"
+        }
+      ],
+      "suspicious_terms_in_text": [],
+      "sample_ui_texts": [
+        "Enroll New Device",
+        "Pair cryptographic hardware identity with informed consent",
+        "\u00d7",
+        "Expires in 04:32",
+        "Pairing Challenge Token (Single-Use)"
+      ]
+    },
+    "mobile_dashboard.json": {
+      "status": "PASS",
+      "total_commands": 67,
+      "command_breakdown": {
+        "frame.create": 1,
+        "node.create": 25,
+        "vector.create": 3,
+        "text.create": 38,
+        "shape.line": 0
+      },
+      "frame_dimensions": {
+        "width": 390,
+        "height": 844,
+        "name": "XennGuard - Mobile Dashboard (390x844)"
+      },
+      "vector_count": 3,
+      "invalid_vectors": [],
+      "sample_vectors": [
+        {
+          "name": "Mobile Shield Icon",
+          "path_len": 69,
+          "path_sample": "M 7 0 L 14 3.5 V 9 C 14 13.5 11 16.5 7 1..."
+        },
+        {
+          "name": "Phone Icon Vector",
+          "path_len": 119,
+          "path_sample": "M 2 0 L 10 0 C 11.1 0 12 0.9 12 2 L 12 1..."
+        },
+        {
+          "name": "Laptop Icon Vector",
+          "path_len": 151,
+          "path_sample": "M 2 0 L 16 0 C 17.1 0 18 0.9 18 2 L 18 1..."
+        }
+      ],
+      "suspicious_terms_in_text": [],
+      "sample_ui_texts": [
+        "XennGuard",
+        "Family Protection",
+        "2 Online",
+        "Protected Devices",
+        "Continuous heartbeats & verified telemetry"
+      ]
+    },
+    "telemetry_screen.json": {
+      "status": "PASS",
+      "total_commands": 107,
+      "command_breakdown": {
+        "frame.create": 1,
+        "node.create": 39,
+        "vector.create": 4,
+        "text.create": 58,
+        "shape.line": 5
+      },
+      "frame_dimensions": {
+        "width": 1440,
+        "height": 900,
+        "name": "XennGuard - Telemetry Details (1440x900)"
+      },
+      "vector_count": 4,
+      "invalid_vectors": [],
+      "sample_vectors": [
+        {
+          "name": "Shield Vector Icon",
+          "path_len": 67,
+          "path_sample": "M 8 0 L 16 4 V 10 C 16 15 12.5 18.5 8 20..."
+        },
+        {
+          "name": "Battery Trend Shaded Area",
+          "path_len": 108,
+          "path_sample": "M 0 232 L 0 20 L 80 35 L 160 70 L 240 60..."
+        },
+        {
+          "name": "Battery Trend Discharge Polyline",
+          "path_len": 216,
+          "path_sample": "M 0 20 C 40 25 60 30 80 35 C 120 50 140 ..."
+        },
+        {
+          "name": "Battery Fast Charging Segment",
+          "path_len": 25,
+          "path_sample": "M 0 115 C 40 30 60 5 80 0"
+        }
+      ],
+      "suspicious_terms_in_text": [
+        "Sampled at 15-minute intervals via Android WorkManager background scheduler"
+      ],
+      "sample_ui_texts": [
+        "XennGuard",
+        "Family Device Security",
+        "Dashboard",
+        "Devices",
+        "Audit Trail"
+      ]
+    }
+  },
+  "reproducibility_audit": {
+    "auth_screen.json": {
+      "status": "PASS",
+      "script_run_ok": true,
+      "export_png_ok": true,
+      "original_nodes": 49,
+      "generated_nodes": 49,
+      "nodes_parity": true,
+      "rendered_w": 2880,
+      "rendered_h": 1800,
+      "expected_w": 2880,
+      "expected_h": 1800,
+      "dimension_parity": true
+    },
+    "dashboard_screen.json": {
+      "status": "PASS",
+      "script_run_ok": true,
+      "export_png_ok": true,
+      "original_nodes": 146,
+      "generated_nodes": 146,
+      "nodes_parity": true,
+      "rendered_w": 2880,
+      "rendered_h": 1800,
+      "expected_w": 2880,
+      "expected_h": 1800,
+      "dimension_parity": true
+    },
+    "enrollment_modal.json": {
+      "status": "PASS",
+      "script_run_ok": true,
+      "export_png_ok": true,
+      "original_nodes": 55,
+      "generated_nodes": 55,
+      "nodes_parity": true,
+      "rendered_w": 1200,
+      "rendered_h": 1000,
+      "expected_w": 1200,
+      "expected_h": 1000,
+      "dimension_parity": true
+    },
+    "mobile_dashboard.json": {
+      "status": "PASS",
+      "script_run_ok": true,
+      "export_png_ok": true,
+      "original_nodes": 68,
+      "generated_nodes": 68,
+      "nodes_parity": true,
+      "rendered_w": 780,
+      "rendered_h": 1688,
+      "expected_w": 780,
+      "expected_h": 1688,
+      "dimension_parity": true
+    },
+    "telemetry_screen.json": {
+      "status": "PASS",
+      "script_run_ok": true,
+      "export_png_ok": true,
+      "original_nodes": 108,
+      "generated_nodes": 108,
+      "nodes_parity": true,
+      "rendered_w": 2880,
+      "rendered_h": 1800,
+      "expected_w": 2880,
+      "expected_h": 1800,
+      "dimension_parity": true
+    }
+  },
+  "zero_emoji_audit": {
+    "design.md": {
+      "status": "PASS",
+      "count": 0,
+      "matches": []
+    },
+    "scripts\\design\\auth_screen.json": {
+      "status": "PASS",
+      "count": 0,
+      "matches": []
+    },
+    "scripts\\design\\dashboard_screen.json": {
+      "status": "PASS",
+      "count": 0,
+      "matches": []
+    },
+    "scripts\\design\\enrollment_modal.json": {
+      "status": "PASS",
+      "count": 0,
+      "matches": []
+    },
+    "scripts\\design\\mobile_dashboard.json": {
+      "status": "PASS",
+      "count": 0,
+      "matches": []
+    },
+    "scripts\\design\\telemetry_screen.json": {
+      "status": "PASS",
+      "count": 0,
+      "matches": []
+    },
+    "prototypes\\auth.figcraft\\document.json": {
+      "status": "PASS",
+      "count": 0,
+      "matches": []
+    },
+    "prototypes\\dashboard.figcraft\\document.json": {
+      "status": "PASS",
+      "count": 0,
+      "matches": []
+    },
+    "prototypes\\enrollment_modal.figcraft\\document.json": {
+      "status": "PASS",
+      "count": 0,
+      "matches": []
+    },
+    "prototypes\\mobile_dashboard.figcraft\\document.json": {
+      "status": "PASS",
+      "count": 0,
+      "matches": []
+    },
+    "prototypes\\telemetry.figcraft\\document.json": {
+      "status": "PASS",
+      "count": 0,
+      "matches": []
+    }
+  },
+  "design_md_audit": {
+    "status": "PASS",
+    "checklist": {
+      "Atmospheric Obsidian (#0B0F19)": true,
+      "Solid Content Card (#111827)": true,
+      "Cobalt Primary Brand (#2563EB)": true,
+      "Liquid Glass Platter Specification": true,
+      "WCAG AA Contrast Matrix with calculations": true,
+      "Zero-Emoji Policy and Vector Icon Registry": true,
+      "7 Interaction States Defined": true,
+      "Apple Motion Timing (cubic-bezier)": true,
+      "Reduced Transparency Fallback": true,
+      "Reduced Motion Fallback": true
+    },
+    "line_count": 392,
+    "character_count": 22591
+  },
+  "verdict": "CLEAN"
+}

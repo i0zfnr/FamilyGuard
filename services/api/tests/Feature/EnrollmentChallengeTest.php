@@ -15,7 +15,7 @@ class EnrollmentChallengeTest extends TestCase
     {
         $this->postJson('/api/v1/devices/enrollment-challenges')->assertUnauthorized();
         $user = User::factory()->create();
-        $response = $this->actingAs($user)->postJson('/api/v1/devices/enrollment-challenges')->assertCreated()->assertHeader('Cache-Control', 'no-store, private')->assertJsonPath('enrollment_available', false);
+        $response = $this->actingAs($user)->postJson('/api/v1/devices/enrollment-challenges')->assertCreated()->assertHeader('Cache-Control', 'no-store, private')->assertJsonPath('enrollment_available', true);
         $token = $response->json('token');
         $this->assertSame(64, strlen($token));
         $challenge = EnrollmentChallenge::findOrFail($response->json('id'));

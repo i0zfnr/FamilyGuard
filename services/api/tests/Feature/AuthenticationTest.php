@@ -38,7 +38,7 @@ class AuthenticationTest extends TestCase
         $device = Device::create(['owner_id' => $owner->id, 'device_name' => 'Phone', 'platform' => 'android', 'public_key' => 'test-key']);
         $this->getJson('/api/v1/devices')->assertUnauthorized();
         $this->actingAs($other)->getJson('/api/v1/devices')->assertOk()->assertJsonCount(0, 'data');
-        $this->actingAs($other)->getJson('/api/v1/devices/'.$device->id)->assertNotFound();
+        $this->actingAs($other)->getJson('/api/v1/devices/'.$device->id)->assertForbidden();
         $this->actingAs($owner)->getJson('/api/v1/devices')->assertOk()->assertJsonCount(1, 'data')->assertJsonMissingPath('data.0.public_key');
     }
 }

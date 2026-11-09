@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AuditLog;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Password;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
@@ -20,17 +22,46 @@ class AuthController extends Controller
         $user = User::create($data)->refresh();
         Auth::login($user);
         $request->session()->regenerate();
+
+        AuditLog::record(
+            eventType: 'auth.register',
+            userId: $user->id,
+            request: $request,
+            payload: ['email' => $user->email, 'role' => $user->role]
+        );
+
         return response()->json(['user' => $this->publicUser($user)], 201);
     }
 
     public function login(Request $request): JsonResponse
     {
-        $credentials = $request->validate(['email' => ['required', 'email', 'max:255'], 'password' => ['required', 'string', 'max:1024']]);
+        $credentials = $request->validate([
+            'email' => ['required', 'email', 'max:255'],
+            'password' => ['required', 'string', 'max:1024'],
+        ]);
+
         if (! Auth::attempt($credentials)) {
+            AuditLog::record(
+                eventType: 'auth.login_failed',
+                userId: null,
+                request: $request,
+                payload: ['email' => $credentials['email']]
+            );
+
             return response()->json(['message' => 'Invalid email or password.'], 422);
         }
+
         $request->session()->regenerate();
-        return response()->json(['user' => $this->publicUser($request->user())]);
+        $user = $request->user();
+
+        AuditLog::record(
+            eventType: 'auth.login',
+            userId: $user->id,
+            request: $request,
+            payload: ['email' => $user->email]
+        );
+
+        return response()->json(['user' => $this->publicUser($user)]);
     }
 
     public function me(Request $request): JsonResponse
@@ -40,9 +71,24 @@ class AuthController extends Controller
 
     public function logout(Request $request): JsonResponse
     {
-        Auth::logout();
+        $user = $request->user();
+        if ($user) {
+            AuditLog::record(
+                eventType: 'auth.logout',
+                userId: $user->id,
+                request: $request
+            );
+        }
+
+        $token = $request->user()?->currentAccessToken();
+        if ($token instanceof PersonalAccessToken) {
+            $token->delete();
+        }
+
+        Auth::guard('web')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return response()->json(['message' => 'Signed out.']);
     }
 

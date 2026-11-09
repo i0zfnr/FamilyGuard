@@ -10,6 +10,7 @@ class EnrollmentChallenge extends Model
     use HasUuids;
 
     protected $guarded = ['id'];
+
     protected $hidden = ['token_hash'];
 
     protected function casts(): array

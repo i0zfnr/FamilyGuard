@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
@@ -37,10 +38,13 @@ return new class extends Migration {
             $table->unique(['device_id', 'user_id', 'permission_type']);
         });
     }
+
     public function down(): void
     {
         Schema::dropIfExists('device_permissions');
         Schema::dropIfExists('devices');
-        Schema::table('users', function (Blueprint $table) { $table->dropColumn(['role', 'mfa_enabled']); });
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn(['role', 'mfa_enabled']);
+        });
     }
 };

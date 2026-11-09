@@ -1,13 +1,17 @@
 <?php
+
 namespace Tests\Feature;
+
 use App\Models\Device;
 use App\Models\DeviceTelemetry;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+
 class TelemetryRetentionTest extends TestCase
 {
     use RefreshDatabase;
+
     public function test_pruning_removes_only_expired_records(): void
     {
         $user = User::factory()->create();
