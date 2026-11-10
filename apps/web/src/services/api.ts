@@ -23,12 +23,30 @@ export class RequestError extends Error {
 
 let cachedCsrfToken: string | null = null
 
+function responseErrorMessage(status: number, fallback?: string): string {
+  if (status >= 500) {
+    return `XennGuard's API server is unavailable (HTTP ${status}). Your request could not be confirmed. Try again later.`
+  }
+  return fallback || 'Request failed.'
+}
+
+async function fetchResponse(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+  try {
+    return await fetch(input, init)
+  } catch {
+    throw new RequestError('Cannot reach XennGuard’s API server. Check your connection and try again.', 0)
+  }
+}
+
 export async function fetchCsrfToken(): Promise<string> {
-  const response = await fetch('/api/v1/csrf', {
+  const response = await fetchResponse('/api/v1/csrf', {
     headers: { Accept: 'application/json' },
   })
   if (!response.ok) {
-    throw new RequestError('Could not initialize session security token.', response.status)
+    throw new RequestError(
+      responseErrorMessage(response.status, 'Could not initialize the secure session token.'),
+      response.status
+    )
   }
   const payload: CsrfResponse = await response.json()
   cachedCsrfToken = payload.csrf_token
@@ -48,11 +66,7 @@ export async function request<T>(path: string, options: RequestInit = {}): Promi
 
   if (method !== 'GET') {
     if (!cachedCsrfToken) {
-      try {
-        await fetchCsrfToken()
-      } catch {
-        // If CSRF fetch fails, attempt proceeding so backend error displays clearly
-      }
+      await fetchCsrfToken()
     }
     if (cachedCsrfToken) {
       headers['X-CSRF-TOKEN'] = cachedCsrfToken
@@ -62,7 +76,7 @@ export async function request<T>(path: string, options: RequestInit = {}): Promi
     }
   }
 
-  const response = await fetch('/api/v1' + path, {
+  const response = await fetchResponse('/api/v1' + path, {
     ...options,
     headers,
   })
@@ -73,7 +87,7 @@ export async function request<T>(path: string, options: RequestInit = {}): Promi
       cachedCsrfToken = null
       await fetchCsrfToken()
       headers['X-CSRF-TOKEN'] = cachedCsrfToken!
-      const retryResponse = await fetch('/api/v1' + path, {
+      const retryResponse = await fetchResponse('/api/v1' + path, {
         ...options,
         headers,
       })
@@ -86,7 +100,7 @@ export async function request<T>(path: string, options: RequestInit = {}): Promi
     const validationMessage = errorPayload.errors
       ? Object.values(errorPayload.errors).flat().join(' ')
       : undefined
-    const errorMessage = validationMessage || errorPayload.message || 'Request failed.'
+    const errorMessage = responseErrorMessage(response.status, validationMessage || errorPayload.message)
     throw new RequestError(errorMessage, response.status, errorPayload.errors)
   }
 

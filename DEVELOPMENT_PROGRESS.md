@@ -173,3 +173,9 @@ Android debug build and unit tests, plus web build and lint, passed after the br
 - Added a clear server-unavailable state and disabled setup while the API is unreachable. The status no longer implies that a disconnected server is still connecting.
 - Rebuilt the production web assets and synced them into `public/` for Ryaze's root deployment.
 - Validation: `npm test` passed 33 tests; `npm run build` and `npm run lint` passed. Commit `3a42e50` was pushed to `origin/main` and `origin/master`; a Ryaze redeployment completed and its public root returns HTTP 200 with bundle `index-CQuJ7gHe.js`. The public `/api/v1/health` still returns HTTP 502, so this interface update does not make sign-in work or enable enrollment.
+
+## Registration failure handling (2026-11-10)
+
+- The browser now stops before sending login or registration data when it cannot obtain the Laravel CSRF token. API gateway errors show their HTTP status and a clear retry message instead of the generic “Request failed.” Network connection errors are also explained directly.
+- Ryaze diagnosis: `php artisan route:list --path=api/v1/health` confirms the Laravel route exists, while the public `/api/v1/health` and `/api/v1/csrf` both return HTTP 502. In the Ryaze project terminal, `.port` is empty, no app listener answered on `127.0.0.1:8080`, and no PHP-FPM/Artisan server process appeared. The current Nginx PHP/FastCGI route therefore has no working upstream. No temporary development server was exposed publicly.
+- Validation: 36 web tests passed; production build and lint passed. Live account creation remains blocked until Ryaze restores a production PHP upstream.
