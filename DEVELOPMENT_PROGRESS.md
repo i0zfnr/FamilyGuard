@@ -165,3 +165,11 @@ Android debug build and unit tests, plus web build and lint, passed after the br
 - **Deployment & Remote Sync**:
   - Pushed all changes to both `origin/master` and `origin/main` (`commit 426c956`).
   - Verified Ryaze public endpoint: `https://xennguard.ryz.my.id` returns `HTTP 200 OK` (Cloudflare dynamic cache).
+
+## Simpler first-device setup (2026-11-10)
+
+- Simplified the empty Devices screen into one three-step first-phone setup guide. Removed empty-state metrics, search and platform filters, duplicate add-device actions, and sidebar quick filters.
+- Replaced the decorative, non-scannable QR pattern with a real QR containing the Android app's expected one-time JSON pairing payload. Added copy/paste setup instructions and a clear disabled-enrollment message; the device owner must still approve on their phone.
+- Added a clear server-unavailable state and disabled setup while the API is unreachable. The status no longer implies that a disconnected server is still connecting.
+- Rebuilt the production web assets and synced them into `public/` for Ryaze's root deployment.
+- Validation: `npm test` passed 33 tests; `npm run build` and `npm run lint` passed. Commit `3a42e50` was pushed to `origin/main` and `origin/master`; a Ryaze redeployment completed and its public root returns HTTP 200 with bundle `index-CQuJ7gHe.js`. The public `/api/v1/health` still returns HTTP 502, so this interface update does not make sign-in work or enable enrollment.

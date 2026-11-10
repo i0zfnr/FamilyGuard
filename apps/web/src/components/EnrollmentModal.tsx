@@ -1,5 +1,6 @@
 import { useState, useEffect, useId } from 'react'
 import { ShieldCheck, Copy, Check, Clock, Warning, X } from '@phosphor-icons/react'
+import { QRCodeSVG } from 'qrcode.react'
 import { Button } from './Button'
 import type { EnrollmentChallenge } from '../types'
 
@@ -19,7 +20,6 @@ export function EnrollmentModal({
   busy = false,
 }: EnrollmentModalProps) {
   const [copied, setCopied] = useState(false)
-  const [consentApproved, setConsentApproved] = useState(false)
   const [timeLeft, setTimeLeft] = useState<number>(300) // 5 minutes in seconds
   const titleId = useId()
 
@@ -48,7 +48,7 @@ export function EnrollmentModal({
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(challenge.token)
+      await navigator.clipboard.writeText(pairingPayload)
       setCopied(true)
       setTimeout(() => setCopied(false), 2500)
     } catch {
@@ -61,49 +61,28 @@ export function EnrollmentModal({
     onClose()
   }
 
-  // Generate an authentic high-contrast SVG QR pattern matrix based on challenge id & token
-  const qrMatrixSize = 25
-  const generateQrCells = () => {
-    const cells: boolean[][] = []
-    const seedStr = `${challenge.id}:${challenge.token}`
-    let hash = 0
-    for (let i = 0; i < seedStr.length; i++) {
-      hash = (hash << 5) - hash + seedStr.charCodeAt(i)
-      hash |= 0
-    }
+  const pairingPayload = JSON.stringify({
+    server: window.location.origin,
+    challenge_id: challenge.id,
+    challenge_token: challenge.token,
+  })
 
-    for (let r = 0; r < qrMatrixSize; r++) {
-      const row: boolean[] = []
-      for (let c = 0; c < qrMatrixSize; c++) {
-        const isFinderTopLeft = r < 7 && c < 7
-        const isFinderTopRight = r < 7 && c >= qrMatrixSize - 7
-        const isFinderBottomLeft = r >= qrMatrixSize - 7 && c < 7
-
-        if (isFinderTopLeft) {
-          const border = r === 0 || r === 6 || c === 0 || c === 6
-          const inner = r >= 2 && r <= 4 && c >= 2 && c <= 4
-          row.push(border || inner)
-        } else if (isFinderTopRight) {
-          const cRel = c - (qrMatrixSize - 7)
-          const border = r === 0 || r === 6 || cRel === 0 || cRel === 6
-          const inner = r >= 2 && r <= 4 && cRel >= 2 && cRel <= 4
-          row.push(border || inner)
-        } else if (isFinderBottomLeft) {
-          const rRel = r - (qrMatrixSize - 7)
-          const border = rRel === 0 || rRel === 6 || c === 0 || c === 6
-          const inner = rRel >= 2 && rRel <= 4 && c >= 2 && c <= 4
-          row.push(border || inner)
-        } else {
-          const bit = Math.abs(Math.sin((r * qrMatrixSize + c + hash) * 9301 + 49297) * 233280) % 2 > 0.98
-          row.push(bit)
-        }
-      }
-      cells.push(row)
-    }
-    return cells
+  if (!challenge.enrollment_available) {
+    return (
+      <div className="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby={titleId}>
+        <div className="liquid-glass-modal enrollment-modal-content">
+          <div className="enrollment-modal-heading">
+            <div className="auth-card-icon-box" aria-hidden="true"><Warning size={22} /></div>
+            <div><h2 id={titleId}>Setup is unavailable</h2><p>Device enrollment is currently turned off on the server.</p></div>
+          </div>
+          <p className="enrollment-guidance">No phone was connected. Close this window and try again after enrollment is enabled.</p>
+          <div className="enrollment-actions">
+            <Button variant="secondary" onClick={handleCancel} disabled={busy}>Close and discard code</Button>
+          </div>
+        </div>
+      </div>
+    )
   }
-
-  const qrMatrix = generateQrCells()
 
   return (
     <div
@@ -149,10 +128,10 @@ export function EnrollmentModal({
             </div>
             <div>
               <h3 id={titleId} style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0, letterSpacing: '-0.02em' }}>
-                Enroll New Device
+                Connect a phone
               </h3>
               <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', margin: '2px 0 0' }}>
-                Single-use cryptographic enrollment challenge
+                The phone owner must approve this connection on their device.
               </p>
             </div>
           </div>
@@ -190,19 +169,13 @@ export function EnrollmentModal({
               marginBottom: '16px',
             }}
           >
-            <svg
-              viewBox={`0 0 ${qrMatrixSize} ${qrMatrixSize}`}
-              style={{ width: '100%', height: '100%', display: 'block' }}
-              shapeRendering="crispEdges"
-              aria-label="Cryptographic Pairing QR Code"
-            >
-              <rect width={qrMatrixSize} height={qrMatrixSize} fill="#FFFFFF" />
-              {qrMatrix.map((row, r) =>
-                row.map((active, c) =>
-                  active ? <rect key={`${r}-${c}`} x={c} y={r} width="1" height="1" fill="#152219" /> : null
-                )
-              )}
-            </svg>
+            <QRCodeSVG
+              value={pairingPayload}
+              size={156}
+              level="Q"
+              title="One-time XennGuard phone setup code"
+              className="pairing-qr"
+            />
           </div>
 
           <div
@@ -229,7 +202,7 @@ export function EnrollmentModal({
         {/* Challenge Secret */}
         <div style={{ marginBottom: '20px' }}>
           <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: '6px' }}>
-            64-Character Secret Token
+            One-time setup code
           </label>
           <div
             style={{
@@ -243,46 +216,27 @@ export function EnrollmentModal({
               padding: '8px 12px',
             }}
           >
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {challenge.token}
-            </span>
+            <textarea
+              aria-label="One-time setup code"
+              readOnly
+              value={pairingPayload}
+              rows={2}
+              onFocus={(event) => event.currentTarget.select()}
+              style={{ flex: 1, minWidth: 0, resize: 'vertical', border: 0, background: 'transparent', color: 'var(--color-text-primary)', fontFamily: 'var(--font-mono)', fontSize: '11px', lineHeight: 1.4 }}
+            />
             <Button
               variant="secondary"
               size="sm"
               icon={copied ? <Check size={14} weight="bold" color="#1A6E40" /> : <Copy size={14} weight="regular" />}
               onClick={handleCopy}
-              title="Copy secret to clipboard"
+              title="Copy one-time setup code"
             >
               {copied ? 'Copied' : 'Copy'}
             </Button>
           </div>
         </div>
 
-        {/* Mutual Consent Checkbox */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            gap: '12px',
-            background: '#F7FAF7',
-            border: '1px solid #DCE6DE',
-            borderRadius: 'var(--radius-md)',
-            padding: '14px',
-            marginBottom: '24px',
-          }}
-        >
-          <input
-            id="device-owner-consent"
-            type="checkbox"
-            checked={consentApproved}
-            onChange={(e) => setConsentApproved(e.target.checked)}
-            style={{ marginTop: '3px', cursor: 'pointer' }}
-          />
-          <label htmlFor="device-owner-consent" style={{ fontSize: '12px', color: 'var(--color-text-secondary)', lineHeight: 1.5, cursor: 'pointer' }}>
-            <strong style={{ color: 'var(--color-text-primary)' }}>Device Owner Consent Verification:</strong> I certify that the device owner has provided explicit,
-            informed consent for telemetry monitoring. Zero covert tracking is enforced by hardware cryptographic proofs.
-          </label>
-        </div>
+        <p className="enrollment-guidance">On the other phone, open XennGuard and paste this code into setup. Its owner reviews and approves the connection there.</p>
 
         {/* Modal Actions */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
@@ -292,16 +246,15 @@ export function EnrollmentModal({
             onClick={handleCancel}
             disabled={busy}
           >
-            Cancel Challenge
+            Cancel setup
           </Button>
 
           <Button
             variant="primary"
             size="md"
             onClick={onClose}
-            disabled={!consentApproved}
           >
-            Done
+            Close
           </Button>
         </div>
       </div>

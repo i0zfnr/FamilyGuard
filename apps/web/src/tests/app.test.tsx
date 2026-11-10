@@ -46,7 +46,7 @@ describe('Root Application Flow & Routing Integration', () => {
     render(<App />)
 
     await waitFor(() => {
-      expect(screen.getByText('Grace Hopper')).toBeInTheDocument()
+      expect(screen.getAllByText('Grace Hopper').length).toBeGreaterThan(0)
       expect(screen.getByText('Primary Workstation')).toBeInTheDocument()
     })
   })
@@ -88,17 +88,17 @@ describe('Root Application Flow & Routing Integration', () => {
     render(<App />)
 
     await waitFor(() => {
-      expect(screen.getByText('Grace Hopper')).toBeInTheDocument()
+      expect(screen.getAllByText('Grace Hopper').length).toBeGreaterThan(0)
     })
 
-    const pairBtn = screen.getByRole('button', { name: /pair device/i })
+    const pairBtn = screen.getByRole('button', { name: /add device/i })
     await act(async () => {
       fireEvent.click(pairBtn)
     })
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /enroll new device/i })).toBeInTheDocument()
-      expect(screen.getByText(mockChallenge.token)).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: /connect a phone/i })).toBeInTheDocument()
+      expect((screen.getByLabelText(/one-time setup code/i) as HTMLTextAreaElement).value).toContain(mockChallenge.token)
     })
   })
 })

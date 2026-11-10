@@ -235,7 +235,7 @@ describe('UI Components Unit Test Suite', () => {
       enrollment_available: true,
     }
 
-    it('renders QR code matrix, timer, token string, and gates completion on consent', () => {
+    it('renders a real QR code, copyable pairing payload, expiry timer, and close action', () => {
       const onClose = vi.fn()
       const onCancelChallenge = vi.fn().mockResolvedValue(undefined)
 
@@ -248,20 +248,12 @@ describe('UI Components Unit Test Suite', () => {
         />
       )
 
-      expect(screen.getByText(/enroll new device/i)).toBeInTheDocument()
-      expect(screen.getByLabelText(/cryptographic pairing qr code/i)).toBeInTheDocument()
-      expect(screen.getByText(mockChallenge.token)).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: /connect a phone/i })).toBeInTheDocument()
+      expect(screen.getByTitle(/one-time xennguard phone setup code/i)).toBeInTheDocument()
+      expect((screen.getByLabelText(/one-time setup code/i) as HTMLTextAreaElement).value).toContain(mockChallenge.token)
       expect(screen.getByText(/expires in/i)).toBeInTheDocument()
 
-      const doneBtn = screen.getByRole('button', { name: /done/i })
-      expect(doneBtn).toBeDisabled()
-
-      // Check consent box
-      const consentCheckbox = screen.getByRole('checkbox', { name: /device owner consent verification/i })
-      fireEvent.click(consentCheckbox)
-      expect(doneBtn).not.toBeDisabled()
-
-      fireEvent.click(doneBtn)
+      fireEvent.click(screen.getByRole('button', { name: /^close$/i }))
       expect(onClose).toHaveBeenCalled()
     })
 
@@ -278,7 +270,7 @@ describe('UI Components Unit Test Suite', () => {
         />
       )
 
-      const cancelBtn = screen.getByRole('button', { name: /cancel challenge/i })
+      const cancelBtn = screen.getByRole('button', { name: /cancel setup/i })
       fireEvent.click(cancelBtn)
       expect(onCancelChallenge).toHaveBeenCalledWith(mockChallenge.id)
     })

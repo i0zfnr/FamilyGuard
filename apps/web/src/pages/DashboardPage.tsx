@@ -14,6 +14,7 @@ export interface DashboardPageProps {
   onInspectDevice: (device: Device) => void
   onRevokeDevice: (device: Device) => Promise<void>
   onPairDevice: () => void
+  serverConnected?: boolean
   platformFilter?: 'all' | 'android' | 'windows'
   onPlatformFilterChange?: (filter: 'all' | 'android' | 'windows') => void
   busy?: boolean
@@ -26,6 +27,7 @@ export function DashboardPage({
   onInspectDevice,
   onRevokeDevice,
   onPairDevice,
+  serverConnected = true,
   platformFilter: platformFilterProp,
   onPlatformFilterChange,
   busy = false,
@@ -141,25 +143,18 @@ export function DashboardPage({
           </p>
         </div>
 
-        <Button
-          variant="primary"
-          icon={<Plus size={16} weight="bold" />}
-          onClick={onPairDevice}
-          disabled={busy}
-        >
-          Pair New Device
-        </Button>
       </div>
 
-      {/* Metric Platter */}
-      <StatPlatter
-        total={metrics.total}
-        online={metrics.online}
-        alerts={metrics.alerts}
-      />
+      {devices.length > 0 && (
+        <StatPlatter
+          total={metrics.total}
+          online={metrics.online}
+          alerts={metrics.alerts}
+        />
+      )}
 
       {/* Filter & Search Bar */}
-      <div
+      {devices.length > 0 && <div
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -196,7 +191,7 @@ export function DashboardPage({
               transition: 'all var(--transition-fast)',
             }}
           >
-            All Devices
+              All devices
           </button>
           <button
             type="button"
@@ -249,7 +244,8 @@ export function DashboardPage({
           />
           <input
             type="search"
-            placeholder="Search devices..."
+            aria-label="Search devices"
+            placeholder="Search devices"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{
@@ -265,7 +261,7 @@ export function DashboardPage({
             }}
           />
         </div>
-      </div>
+      </div>}
 
       {/* Devices List or Empty State */}
       {filteredDevices.length > 0 ? (
@@ -283,7 +279,7 @@ export function DashboardPage({
           </div>
         ) : devices.length === 0 ? (
           /* Empty State */
-          <div className="empty-state-box">
+          <div className="empty-state-box onboarding-empty-state">
             <div className="empty-state-icon-box" aria-hidden="true">
               <ShieldPlus size={32} weight="regular" />
             </div>
@@ -296,7 +292,7 @@ export function DashboardPage({
                 letterSpacing: '-0.02em',
               }}
             >
-              No protected devices enrolled
+              Let’s connect your first phone
             </h2>
             <p
               style={{
@@ -307,16 +303,25 @@ export function DashboardPage({
                 margin: '0 0 24px',
               }}
             >
-              Connect an Android phone or Windows PC with mutual owner consent.
-              All telemetry is cryptographically authenticated and encrypted.
+              Keep both phones nearby. The person who owns the other phone must approve setup on that phone.
             </p>
+            <ol className="pairing-steps" aria-label="Setup steps">
+              <li><span>1</span><div><strong>Install XennGuard</strong><small>Open it on the phone you want to connect.</small></div></li>
+              <li><span>2</span><div><strong>Ask the owner to approve</strong><small>They review and approve the connection on their phone.</small></div></li>
+              <li><span>3</span><div><strong>Connect the phones</strong><small>Use the one-time setup code while both phones are nearby.</small></div></li>
+            </ol>
+            {!serverConnected && (
+              <p className="pairing-unavailable" role="status">
+                Setup is temporarily unavailable because XennGuard cannot reach its server. Try again when the connection is restored.
+              </p>
+            )}
             <Button
               variant="primary"
               icon={<Plus size={16} weight="bold" />}
               onClick={onPairDevice}
-              disabled={busy}
+              disabled={busy || !serverConnected}
             >
-              Pair first device
+              {busy ? 'Preparing setup…' : 'Start setup'}
             </Button>
           </div>
         ) : (

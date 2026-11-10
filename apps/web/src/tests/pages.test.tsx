@@ -143,10 +143,28 @@ describe('Page Views Unit & Integration Test Suite', () => {
         />
       )
 
-      expect(screen.getByText(/no protected devices enrolled/i)).toBeInTheDocument()
-      const pairFirstBtn = screen.getByRole('button', { name: /pair first device/i })
+      expect(screen.getByRole('heading', { name: /connect your first phone/i })).toBeInTheDocument()
+      expect(screen.getByRole('list', { name: /setup steps/i })).toBeInTheDocument()
+      const pairFirstBtn = screen.getByRole('button', { name: /start setup/i })
       fireEvent.click(pairFirstBtn)
       expect(onPair).toHaveBeenCalled()
+    })
+
+    it('explains server outage and disables setup while disconnected', () => {
+      render(
+        <DashboardPage
+          user={mockUser}
+          devices={[]}
+          serverConnected={false}
+          onInspectDevice={vi.fn()}
+          onRevokeDevice={vi.fn().mockResolvedValue(undefined)}
+          onPairDevice={vi.fn()}
+        />
+      )
+
+      expect(screen.getByRole('status')).toHaveTextContent(/cannot reach its server/i)
+      expect(screen.getByRole('button', { name: /start setup/i })).toBeDisabled()
+      expect(screen.queryByRole('region', { name: /device statistics/i })).not.toBeInTheDocument()
     })
   })
 

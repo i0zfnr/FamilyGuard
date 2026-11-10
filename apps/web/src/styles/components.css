@@ -455,6 +455,11 @@ body {
 }
 
 /* Empty State */
+:where(button, input, textarea, a):focus-visible {
+  outline: 3px solid #3F7D52;
+  outline-offset: 3px;
+}
+
 .empty-state-box {
   background: #FFFFFF;
   border: 1px dashed #B8CEBE;
@@ -478,4 +483,130 @@ body {
   justify-content: center;
   color: var(--color-brand-primary);
   margin-bottom: 20px;
+}
+
+.onboarding-empty-state {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: clamp(28px, 5vw, 52px);
+  border-style: solid;
+  text-align: left;
+  align-items: flex-start;
+}
+
+.onboarding-empty-state .empty-state-icon-box {
+  margin-bottom: 18px;
+}
+
+.pairing-steps {
+  display: grid;
+  gap: 12px;
+  width: min(100%, 560px);
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px;
+  text-align: left;
+}
+
+.pairing-steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid #D7E3D9;
+  border-radius: 14px;
+  background: #F7FAF7;
+}
+
+.pairing-steps li > span {
+  display: grid;
+  place-items: center;
+  flex: 0 0 26px;
+  height: 26px;
+  border-radius: 50%;
+  color: #FFFFFF;
+  background: #1B3626;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.pairing-steps strong,
+.pairing-steps small {
+  display: block;
+}
+
+.pairing-steps strong {
+  color: #17271D;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.pairing-steps small {
+  margin-top: 3px;
+  color: #4D6254;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.pairing-unavailable {
+  width: min(100%, 560px);
+  padding: 12px 14px;
+  margin: 0 0 20px;
+  border: 1px solid #D9A5A5;
+  border-radius: 12px;
+  color: #7B2020;
+  background: #FFF5F4;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.enrollment-modal-content {
+  padding: clamp(22px, 5vw, 32px);
+  max-width: 520px;
+}
+
+.enrollment-modal-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.enrollment-modal-heading h2 {
+  margin: 0;
+  color: #17271D;
+  font-size: 21px;
+  letter-spacing: -0.02em;
+}
+
+.enrollment-modal-heading p,
+.enrollment-guidance {
+  color: #4D6254;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.enrollment-modal-heading p {
+  margin: 4px 0 0;
+}
+
+.enrollment-guidance {
+  margin: 0 0 20px;
+}
+
+.enrollment-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.pairing-qr {
+  width: 156px;
+  height: 156px;
+  display: block;
+  background: #FFFFFF;
+}
+
+@media (max-width: 640px) {
+  .onboarding-empty-state {
+    padding: 24px 18px;
+  }
 }

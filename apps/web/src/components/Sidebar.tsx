@@ -4,10 +4,6 @@ import {
   ActivityIcon as Activity,
   ShieldCheck,
   Sliders,
-  SignOut,
-  Plus,
-  Desktop,
-  Devices as DevicesIcon,
   Circle,
 } from '@phosphor-icons/react'
 import type { User, Device } from '../types'
@@ -18,31 +14,17 @@ export interface SidebarProps {
   user: User | null
   activeTab: SidebarTab
   onTabChange: (tab: SidebarTab) => void
-  platformFilter?: 'all' | 'android' | 'windows'
-  onPlatformFilterChange?: (filter: 'all' | 'android' | 'windows') => void
   devices?: Device[]
-  onPairDevice: () => void
-  onSignOut: () => void
-  serverConnected?: boolean
-  busy?: boolean
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   user,
   activeTab,
   onTabChange,
-  platformFilter = 'all',
-  onPlatformFilterChange,
   devices = [],
-  onPairDevice,
-  onSignOut,
-  serverConnected = true,
-  busy = false,
 }) => {
   const userInitial = user?.name ? user.name.trim().charAt(0).toUpperCase() : 'U'
 
-  const androidCount = devices.filter((d) => d.platform === 'android').length
-  const windowsCount = devices.filter((d) => d.platform === 'windows').length
   const totalCount = devices.length
 
   return (
@@ -226,213 +208,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
         }}
       />
 
-      {/* 4. Fleet Collection Section (like YOUR COLLECTION in image 3) */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flex: 1 }}>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '0 10px 8px',
-          }}
-        >
-          <span
-            style={{
-              fontSize: '10.5px',
-              fontWeight: 700,
-              color: '#6E8074',
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-            }}
-          >
-            Your Fleet
-          </span>
-          <button
-            type="button"
-            onClick={onPairDevice}
-            disabled={busy}
-            title="Enroll new device"
-            aria-label="Enroll new device"
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#A2C49E',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '2px',
-            }}
-          >
-            <Plus size={14} weight="bold" />
-          </button>
-        </div>
-
-        {/* All Devices Filter */}
-        <button
-          type="button"
-          onClick={() => {
-            onTabChange('devices')
-            if (onPlatformFilterChange) onPlatformFilterChange('all')
-          }}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '8px 12px',
-            borderRadius: '8px',
-            fontSize: '13px',
-            fontWeight: 500,
-            border: 'none',
-            background:
-              activeTab === 'devices' && platformFilter === 'all'
-                ? 'rgba(255, 255, 255, 0.06)'
-                : 'transparent',
-            color:
-              activeTab === 'devices' && platformFilter === 'all'
-                ? '#FFFFFF'
-                : '#7E9184',
-            cursor: 'pointer',
-            textAlign: 'left',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <DevicesIcon size={16} />
-            <span>All Devices</span>
-          </div>
-          <span
-            style={{
-              fontSize: '11px',
-              fontWeight: 600,
-              color: '#6E8074',
-              background: 'rgba(255, 255, 255, 0.04)',
-              padding: '2px 6px',
-              borderRadius: '4px',
-            }}
-          >
-            {totalCount}
-          </span>
-        </button>
-
-        {/* Android Devices Filter */}
-        <button
-          type="button"
-          onClick={() => {
-            onTabChange('devices')
-            if (onPlatformFilterChange) onPlatformFilterChange('android')
-          }}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '8px 12px',
-            borderRadius: '8px',
-            fontSize: '13px',
-            fontWeight: 500,
-            border: 'none',
-            background:
-              activeTab === 'devices' && platformFilter === 'android'
-                ? 'rgba(255, 255, 255, 0.06)'
-                : 'transparent',
-            color:
-              activeTab === 'devices' && platformFilter === 'android'
-                ? '#FFFFFF'
-                : '#7E9184',
-            cursor: 'pointer',
-            textAlign: 'left',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <DeviceMobileCamera size={16} />
-            <span>Android</span>
-          </div>
-          <span
-            style={{
-              fontSize: '11px',
-              fontWeight: 600,
-              color: '#6E8074',
-              background: 'rgba(255, 255, 255, 0.04)',
-              padding: '2px 6px',
-              borderRadius: '4px',
-            }}
-          >
-            {androidCount}
-          </span>
-        </button>
-
-        {/* Windows Devices Filter */}
-        <button
-          type="button"
-          onClick={() => {
-            onTabChange('devices')
-            if (onPlatformFilterChange) onPlatformFilterChange('windows')
-          }}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '8px 12px',
-            borderRadius: '8px',
-            fontSize: '13px',
-            fontWeight: 500,
-            border: 'none',
-            background:
-              activeTab === 'devices' && platformFilter === 'windows'
-                ? 'rgba(255, 255, 255, 0.06)'
-                : 'transparent',
-            color:
-              activeTab === 'devices' && platformFilter === 'windows'
-                ? '#FFFFFF'
-                : '#7E9184',
-            cursor: 'pointer',
-            textAlign: 'left',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Desktop size={16} />
-            <span>Windows</span>
-          </div>
-          <span
-            style={{
-              fontSize: '11px',
-              fontWeight: 600,
-              color: '#6E8074',
-              background: 'rgba(255, 255, 255, 0.04)',
-              padding: '2px 6px',
-              borderRadius: '4px',
-            }}
-          >
-            {windowsCount}
-          </span>
-        </button>
-
-        {/* Quick Add Device Button */}
-        <button
-          type="button"
-          onClick={onPairDevice}
-          disabled={busy}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            padding: '10px 12px',
-            marginTop: '8px',
-            borderRadius: '8px',
-            fontSize: '13px',
-            fontWeight: 600,
-            border: '1px dashed rgba(255, 255, 255, 0.15)',
-            background: 'transparent',
-            color: '#A2C49E',
-            cursor: 'pointer',
-            textAlign: 'left',
-          }}
-        >
-          <Plus size={16} weight="bold" />
-          <span>Register device</span>
-        </button>
+      {/* Device filters live on the Devices page to keep navigation focused. */}
+      <div style={{ flex: 1, padding: '4px 10px', color: '#8A9E91' }}>
+        <span style={{ display: 'block', fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#6E8074' }}>
+          Connected devices
+        </span>
+        <strong style={{ display: 'block', marginTop: '8px', fontSize: '14px', color: '#FFFFFF' }}>
+          {totalCount} {totalCount === 1 ? 'device' : 'devices'}
+        </strong>
       </div>
 
-      {/* 5. Bottom Pinned Section (Settings, Web Beta, User profile) */}
+      {/* 5. Bottom Pinned Section */}
       <div
         style={{
           marginTop: 'auto',
@@ -526,50 +312,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   }}
                   title={user.email}
                 >
-                  Workspace Admin
+                  {user.name}
                 </span>
                 <span
                   style={{
                     fontSize: '11px',
-                    color: serverConnected ? '#34D399' : '#F59E0B',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
+                    color: '#AAB9AE',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
                   }}
+                  title={user.email}
                 >
-                  <span
-                    style={{
-                      width: '5px',
-                      height: '5px',
-                      borderRadius: '50%',
-                      background: serverConnected ? '#34D399' : '#F59E0B',
-                    }}
-                  />
-                  {serverConnected ? 'Connected' : 'Connecting'}
+                  {user.email}
                 </span>
               </div>
             </div>
-
-            <button
-              type="button"
-              onClick={onSignOut}
-              disabled={busy}
-              title="Sign out of XennGuard"
-              aria-label="Sign out"
-              style={{
-                background: 'none',
-                border: 'none',
-                color: '#7E9184',
-                cursor: 'pointer',
-                padding: '6px',
-                borderRadius: '6px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <SignOut size={16} />
-            </button>
           </div>
         )}
       </div>

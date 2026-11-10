@@ -52,6 +52,7 @@ export function App() {
       )
       setTelemetryMap(latestMap)
     } catch (err) {
+      setServerConnected(false)
       setErrorBanner(err instanceof Error ? err.message : 'Unable to load devices.')
     }
   }, [])
@@ -215,13 +216,7 @@ export function App() {
           setActiveTab(tab)
           setSelectedDevice(null)
         }}
-        platformFilter={platformFilter}
-        onPlatformFilterChange={setPlatformFilter}
         devices={devices}
-        onPairDevice={handlePairDevice}
-        onSignOut={handleSignOut}
-        serverConnected={serverConnected}
-        busy={busy}
       />
 
       {/* 2. Main Viewport Area (offset for 260px docked sidebar) */}
@@ -275,9 +270,9 @@ export function App() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            <div className="server-status-pill" title="Backend connection status">
+            <div className="server-status-pill" title="API server connection status" role="status" aria-live="polite">
               <Activity size={14} weight="bold" className="status-dot pulse" aria-hidden="true" />
-              <span>{serverConnected ? 'Connected' : 'Connecting'}</span>
+              <span>{serverConnected ? 'Connected' : 'Server unavailable'}</span>
             </div>
 
             <div className="user-pill" title={`${user.name} (${user.email})`}>
@@ -287,15 +282,15 @@ export function App() {
               <span>{user.name}</span>
             </div>
 
-            <Button
+            {devices.length > 0 && <Button
               variant="primary"
               size="sm"
               icon={<Plus size={14} weight="bold" />}
               onClick={handlePairDevice}
               disabled={busy}
             >
-              Pair Device
-            </Button>
+              Add device
+            </Button>}
 
             <Button
               variant="ghost"
@@ -377,6 +372,7 @@ export function App() {
               onInspectDevice={(device) => setSelectedDevice(device)}
               onRevokeDevice={handleRevokeDevice}
               onPairDevice={handlePairDevice}
+              serverConnected={serverConnected}
               busy={busy}
             />
           )}
