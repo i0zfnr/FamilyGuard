@@ -20,8 +20,13 @@ object FamilyGuardApi {
             connection.requestMethod = "POST"; connection.doOutput = true
             connection.setRequestProperty("Accept", "application/json")
             connection.setRequestProperty("Content-Type", "application/json")
-            if (token != null) connection.setRequestProperty("Authorization", "Bearer $token")
-            if (!apiKey.isNullOrBlank()) connection.setRequestProperty("apikey", apiKey)
+            if (!apiKey.isNullOrBlank()) {
+                connection.setRequestProperty("Authorization", "Bearer $apiKey")
+                connection.setRequestProperty("apikey", apiKey)
+                if (token != null) connection.setRequestProperty("x-device-token", "Bearer $token")
+            } else if (token != null) {
+                connection.setRequestProperty("Authorization", "Bearer $token")
+            }
             connection.outputStream.use { it.write(payload.toString().toByteArray(Charsets.UTF_8)) }
             val code = connection.responseCode
             if (code !in 200..299) throw IllegalStateException("Server rejected the request (HTTP $code).")

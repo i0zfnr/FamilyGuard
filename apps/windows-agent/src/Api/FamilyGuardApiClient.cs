@@ -133,13 +133,18 @@ namespace XennGuard.Agent.Api
             // Security: Enforce TLS 1.2 minimum
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
-            if (!string.IsNullOrEmpty(bearerToken))
-            {
-                request.Headers["Authorization"] = "Bearer " + bearerToken;
-            }
             if (!string.IsNullOrEmpty(apiKey))
             {
                 request.Headers["apikey"] = apiKey;
+                request.Headers["Authorization"] = "Bearer " + apiKey;
+                if (!string.IsNullOrEmpty(bearerToken))
+                {
+                    request.Headers["x-device-token"] = "Bearer " + bearerToken;
+                }
+            }
+            else if (!string.IsNullOrEmpty(bearerToken))
+            {
+                request.Headers["Authorization"] = "Bearer " + bearerToken;
             }
 
             byte[] bodyBytes = Encoding.UTF8.GetBytes(jsonBody);

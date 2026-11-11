@@ -101,7 +101,7 @@ async function recordAudit(
 async function deviceForToken(
   request: Request,
 ): Promise<Record<string, unknown>> {
-  const token = request.headers.get("Authorization")?.match(
+  const token = request.headers.get("x-device-token")?.match(
     /^Bearer\s+([0-9a-f]{64})$/i,
   )?.[1];
   if (!token) {
@@ -175,7 +175,11 @@ async function handleRequest(request: Request): Promise<Response> {
   }
 
   const segments = new URL(request.url).pathname.split("/").filter(Boolean);
-  const route = segments.slice(3).join("/");
+  const functionIndex = segments.lastIndexOf("xennguard-api");
+  const routeStart = functionIndex >= 0
+    ? functionIndex + 1
+    : segments.indexOf("api");
+  const route = routeStart >= 0 ? segments.slice(routeStart).join("/") : "";
   if (route === "api/v1/health" && request.method === "GET") {
     const { error } = await admin.from("profiles").select("id").limit(1);
     if (error) {

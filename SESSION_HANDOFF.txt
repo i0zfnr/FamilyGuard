@@ -1,0 +1,38 @@
+Xennguard handoff
+Updated: 2026-11-12 Asia/Singapore
+
+Goal
+Deploy current web build to Ryaze and help user verify signup/signin.
+
+Supabase
+- Project: Xennguard, ref akepkkdckpgeioigpusx, Sydney, Free plan.
+- URL: https://akepkkdckpgeioigpusx.supabase.co
+- Edge Function: xennguard-api, deployed.
+- Database schema deployed. service_role grants applied through SQL editor.
+- Gateway JWT verification stays enabled per user choice.
+- Health endpoint returned HTTP 200. Unauthenticated devices endpoint returned HTTP 401.
+- Supabase Auth public settings: email signup enabled; mailer_autoconfirm false. Real email delivery and signup/signin not yet verified.
+- Redirect allowlist was saved in the dashboard for https://xennguard.ryz.my.id/** and http://127.0.0.1:6001/**. Verify in dashboard if needed.
+- Publishable key exists only in ignored apps/web/.env.local and built client assets. Never commit service-role secrets.
+
+Repo
+- C:\laragon\www\FamilyGuard
+- Remote: https://github.com/i0zfnr/FamilyGuard.git
+- Existing branch master was six commits ahead before this increment; Ryaze project is set to branch MAIN.
+- User authorized commit and deploy. Push latest commit to both main and master if remote refs still align.
+- Ryaze project domain: https://xennguard.ryz.my.id
+- Live page returned HTTP 200 but still served old JavaScript bundle index-B_B0oz1i.js. Push/trigger deployment and verify current bundle.
+
+Latest changes
+- Supabase auth/API client plus Authorization/apikey headers.
+- Edge route parser handles gateway rewritten route.
+- Device token uses x-device-token header.
+- Signup email confirmation redirects to current origin.
+- Static production files copied into root public/.
+- DEVELOPMENT_PROGRESS.md records tested results and limitations.
+- Web tests 38/38, lint and production build passed. Build has large bundle advisory.
+- Android unit/build and Windows tests had passed before latest web-only redirect update.
+
+Limitations
+- No account was created and real signup/signin is unverified. User must enter password and confirm email in their own browser.
+- SMTP/email delivery not verified. Enrollment remains consent-gated; do not claim it is production ready.

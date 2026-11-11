@@ -230,3 +230,6 @@ revoke all on function public.revoke_owned_device(uuid, uuid) from public, anon,
 revoke all on function public.create_profile_for_auth_user() from public, anon, authenticated;
 grant execute on function public.claim_device_enrollment(uuid, text, text, text, text, text) to service_role;
 grant execute on function public.revoke_owned_device(uuid, uuid) to service_role;
+grant usage on schema public to service_role;
+grant all privileges on all tables in schema public to service_role;
+grant usage, select on all sequences in schema public to service_role;

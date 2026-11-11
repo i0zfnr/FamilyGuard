@@ -59,9 +59,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const headers = new Headers(options.headers)
   headers.set('Accept', 'application/json')
   headers.set('apikey', publishableKey)
-  if (session?.access_token) {
-    headers.set('Authorization', `Bearer ${session.access_token}`)
-  }
+  headers.set('Authorization', `Bearer ${session?.access_token ?? publishableKey}`)
   if (options.body && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json')
   }
@@ -144,7 +142,10 @@ export const api = {
       const { data, error } = await client.auth.signUp({
         email: input.email,
         password: input.password,
-        options: { data: { name: input.name.trim() } },
+        options: {
+          data: { name: input.name.trim() },
+          emailRedirectTo: window.location.origin,
+        },
       })
       if (error) {
         throw new RequestError(safeSignupMessage(error.message), 422)

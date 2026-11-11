@@ -86,6 +86,14 @@ describe('Supabase API client', () => {
 
     expect(response.confirmationRequired).toBe(true)
     expect(response.user).toBeUndefined()
+    expect(supabaseMocks.client.auth.signUp).toHaveBeenCalledWith({
+      email: 'alice@example.com',
+      password: 'a long secure password',
+      options: {
+        data: { name: 'Alice' },
+        emailRedirectTo: window.location.origin,
+      },
+    })
   })
 
   it('sends the user JWT and publishable key to protected functions', async () => {
@@ -102,6 +110,17 @@ describe('Supabase API client', () => {
     expect(url).toBe('https://project.supabase.co/functions/v1/xennguard-api/api/v1/devices')
     expect(headers.get('apikey')).toBe('sb_publishable_test_key')
     expect(headers.get('Authorization')).toBe('Bearer user-jwt')
+  })
+
+  it('sends the public key as gateway authorization when no user session exists', async () => {
+    global.fetch = vi.fn().mockResolvedValue(new Response(JSON.stringify({ status: 'ok' }), { status: 200 }))
+
+    await api.health.check()
+
+    const [, options] = vi.mocked(global.fetch).mock.calls[0]
+    const headers = new Headers(options?.headers)
+    expect(headers.get('Authorization')).toBe('Bearer sb_publishable_test_key')
+    expect(headers.get('apikey')).toBe('sb_publishable_test_key')
   })
 
   it('reports service failures without claiming signup succeeded', async () => {
