@@ -193,3 +193,12 @@ Android debug build and unit tests, plus web build and lint, passed after the br
 
 - The user selected repairing the existing Ryaze host. Submitted technical support ticket `VoBDbDxbl2EO` for project `xennguard` / `Kgl9avQVeG1v`, documenting the HTTP 502 health/CSRF responses, active deployment, empty `.port` file, current FastCGI route, and asking Ryaze to restore or advise on its managed Laravel PHP upstream while preserving project data and domain.
 - The ticket is confirmed as submitted and is waiting for a support reply. No billing plan or project configuration was changed. Sign-in and enrollment remain unavailable until the host responds and the API health check succeeds.
+
+## Cross-platform test run (2026-11-12)
+
+- Web: `npm test` passed (5 files, 36 tests); `npm run lint` passed; `npm run build` passed.
+- API: `php artisan test` passed (28 tests, 148 assertions). PHPUnit uses in-memory SQLite and array cache/session, so this run did not create a production account or use stored credentials.
+- Android: `gradlew.bat testDebugUnitTest` passed. Gradle emitted an SDK XML version compatibility warning; unit tests completed successfully.
+- Windows agent: `run-tests.ps1` passed (47/47 tests).
+- Live Ryaze check: `/` returned HTTP 200; `/api/v1/health` and `/api/v1/csrf` returned HTTP 502. Therefore deployed signup/signin remain blocked by the host's PHP/API upstream. No real account was created, and no real user password was submitted.
+- Coverage limit: these are repository unit/feature tests, not exhaustive end-to-end tests of every screen or real device enrollment. Enrollment, MFA, recovery, and remote assistance remain unimplemented or disabled as noted above.
