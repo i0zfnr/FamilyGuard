@@ -62,15 +62,15 @@ class TelemetryWorker(
     override suspend fun doWork(): Result {
         val store = DeviceStore(applicationContext)
         val credential = runCatching { store.credential() }.getOrNull() ?: return Result.success()
-        val (server, token) = credential
+        val (server, token, apiKey) = credential
 
         return try {
             // 1. Send heartbeat
-            FamilyGuardApi.post(server, "/api/v1/agent/heartbeat", JSONObject(), token)
+            FamilyGuardApi.post(server, "/api/v1/agent/heartbeat", JSONObject(), token, apiKey)
 
             // 2. Collect and send telemetry
             val telemetry = TelemetryCollector.collect(applicationContext)
-            FamilyGuardApi.post(server, "/api/v1/agent/telemetry", telemetry.toJson(), token)
+            FamilyGuardApi.post(server, "/api/v1/agent/telemetry", telemetry.toJson(), token, apiKey)
 
             // 3. Update ongoing notification to keep user visibly informed (zero covert tracking)
             val timeStr = SimpleDateFormat("HH:mm", Locale.US).format(Date())

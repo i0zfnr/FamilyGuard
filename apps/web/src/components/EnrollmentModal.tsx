@@ -3,6 +3,7 @@ import { ShieldCheck, Copy, Check, Clock, Warning, X } from '@phosphor-icons/rea
 import { QRCodeSVG } from 'qrcode.react'
 import { Button } from './Button'
 import type { EnrollmentChallenge } from '../types'
+import { getSupabasePublishableKey } from '../services/supabase'
 
 export interface EnrollmentModalProps {
   challenge: EnrollmentChallenge | null
@@ -62,7 +63,8 @@ export function EnrollmentModal({
   }
 
   const pairingPayload = JSON.stringify({
-    server: window.location.origin,
+    server: new URL(import.meta.env.VITE_SUPABASE_URL).origin,
+    api_key: getSupabasePublishableKey(),
     challenge_id: challenge.id,
     challenge_token: challenge.token,
   })

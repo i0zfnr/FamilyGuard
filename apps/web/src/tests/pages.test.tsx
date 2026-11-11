@@ -60,6 +60,25 @@ describe('Page Views Unit & Integration Test Suite', () => {
         expect(onAuth).toHaveBeenCalledWith(mockUser)
       })
     })
+
+    it('shows email confirmation guidance without entering the workspace', async () => {
+      const onAuth = vi.fn()
+      vi.spyOn(api.auth, 'register').mockResolvedValue({
+        confirmationRequired: true,
+        message: 'Check your email for a confirmation link before signing in.',
+      })
+
+      render(<AuthPage onAuthenticated={onAuth} />)
+      fireEvent.click(screen.getByRole('button', { name: 'Create account' }))
+      fireEvent.change(screen.getByLabelText(/full name/i), { target: { value: 'Owner' } })
+      fireEvent.change(screen.getByLabelText(/email address/i), { target: { value: 'owner@example.com' } })
+      fireEvent.change(screen.getByLabelText(/^password/i), { target: { value: 'securepassword123' } })
+      fireEvent.change(screen.getByLabelText(/confirm password/i), { target: { value: 'securepassword123' } })
+      fireEvent.click(screen.getByRole('button', { name: /create master account/i }))
+
+      expect(await screen.findByRole('status')).toHaveTextContent(/check your email/i)
+      expect(onAuth).not.toHaveBeenCalled()
+    })
   })
 
   describe('DashboardPage View', () => {

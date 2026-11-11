@@ -112,7 +112,7 @@ namespace XennGuard.Agent
             if (args.Length < 4)
             {
                 Console.WriteLine("Error: Missing required enrollment arguments.");
-                Console.WriteLine("Usage: XennGuardAgent.exe --enroll <server_url> <challenge_id> <challenge_token> [device_name]");
+                Console.WriteLine("Usage: XennGuardAgent.exe --enroll <server_url> <challenge_id> <challenge_token> [device_name] [--api-key <publishable_key>]");
                 return 1;
             }
 
@@ -120,6 +120,7 @@ namespace XennGuard.Agent
             string challengeId = args[2];
             string challengeToken = args[3];
             string deviceName = args.Length >= 5 ? args[4] : Environment.MachineName;
+            string apiKey = args.Length >= 7 && args[5] == "--api-key" ? args[6] : null;
 
             try
             {
@@ -134,10 +135,11 @@ namespace XennGuard.Agent
                     challengeToken,
                     deviceName,
                     publicKeyPem,
-                    signature
+                    signature,
+                    apiKey
                 );
 
-                cryptoStore.SaveCredentials(server, result.DeviceToken, result.DeviceId);
+                cryptoStore.SaveCredentials(server, result.DeviceToken, result.DeviceId, apiKey);
                 Console.WriteLine("Enrollment successful!");
                 Console.WriteLine("Device ID: " + result.DeviceId);
                 Console.WriteLine("Expires:   " + result.ExpiresAt);
@@ -189,7 +191,7 @@ namespace XennGuard.Agent
             Console.WriteLine("Usage:");
             Console.WriteLine("  XennGuardAgent.exe [--tray]                               Run in System Tray with active indicator");
             Console.WriteLine("  XennGuardAgent.exe --daemon                               Run as continuous console daemon");
-            Console.WriteLine("  XennGuardAgent.exe --enroll <server> <id> <token> [name]  Enroll device using RSA challenge signature");
+            Console.WriteLine("  XennGuardAgent.exe --enroll <server> <id> <token> [name] [--api-key <publishable_key>]  Enroll device using RSA challenge signature");
             Console.WriteLine("  XennGuardAgent.exe --checkin                              Perform immediate heartbeat and telemetry check-in");
             Console.WriteLine("  XennGuardAgent.exe --status                               Show enrollment and hardware status");
             Console.WriteLine("  XennGuardAgent.exe --clear                                Clear stored DPAPI credentials");

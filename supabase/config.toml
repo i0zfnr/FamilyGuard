@@ -1,0 +1,4 @@
+project_id = "xennguard"
+
+[functions.xennguard-api]
+verify_jwt = false

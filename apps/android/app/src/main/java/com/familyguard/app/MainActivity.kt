@@ -47,6 +47,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             XennGuardTheme {
                 var server by remember { mutableStateOf("") }
+                var apiKey by remember { mutableStateOf("") }
                 var challengeId by remember { mutableStateOf("") }
                 var challengeToken by remember { mutableStateOf("") }
                 var deviceName by remember { mutableStateOf(Build.MODEL ?: "Android device") }
@@ -275,6 +276,7 @@ class MainActivity : ComponentActivity() {
                                         try {
                                             val parsed = PairingPayloadParser.parse(qrPayloadText)
                                             server = parsed.server
+                                            apiKey = parsed.apiKey.orEmpty()
                                             challengeId = parsed.challengeId
                                             challengeToken = parsed.challengeToken
                                             parsed.deviceName?.let { deviceName = it }
@@ -328,6 +330,19 @@ class MainActivity : ComponentActivity() {
                                     value = server,
                                     onValueChange = { server = it },
                                     label = { Text("HTTPS Server Address") },
+                                    singleLine = true,
+                                    shape = RoundedCornerShape(10.dp),
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = XennPalette.BrandPrimary,
+                                        unfocusedBorderColor = XennPalette.BorderInput
+                                    )
+                                )
+
+                                OutlinedTextField(
+                                    value = apiKey,
+                                    onValueChange = { apiKey = it },
+                                    label = { Text("Supabase publishable key") },
                                     singleLine = true,
                                     shape = RoundedCornerShape(10.dp),
                                     modifier = Modifier.fillMaxWidth(),
@@ -499,7 +514,7 @@ class MainActivity : ComponentActivity() {
 
                         // Enroll Action Button
                         Button(
-                            enabled = allConsentsApproved && !busy && server.isNotBlank() && challengeId.isNotBlank() && challengeToken.isNotBlank(),
+                            enabled = allConsentsApproved && !busy && server.isNotBlank() && apiKey.isNotBlank() && challengeId.isNotBlank() && challengeToken.isNotBlank(),
                             onClick = {
                                 val url = server.trim()
                                 val id = challengeId.trim()
@@ -517,8 +532,8 @@ class MainActivity : ComponentActivity() {
                                         .put("signature", store.sign("$id:$secret"))
                                         .put("owner_approved", true)
 
-                                    val result = FamilyGuardApi.post(url, "/api/v1/devices/enroll", payload)
-                                    store.save(url, result.getString("device_token"), result.getString("device_id"))
+                                    val result = FamilyGuardApi.post(url, "/api/v1/devices/enroll", payload, apiKey = apiKey.trim())
+                                    store.save(url, result.getString("device_token"), result.getString("device_id"), apiKey.trim())
 
                                     ZeroCovertNotificationService.start(this@MainActivity)
                                     TelemetryWorker.schedulePeriodic(this@MainActivity)
@@ -702,10 +717,10 @@ class MainActivity : ComponentActivity() {
                             enabled = !busy,
                             onClick = {
                                 perform {
-                                    val (url, token) = checkNotNull(store.credential())
+                                    val (url, token, apiKey) = checkNotNull(store.credential())
                                     val telemetry = TelemetryCollector.collect(this@MainActivity)
-                                    FamilyGuardApi.post(url, "/api/v1/agent/heartbeat", JSONObject(), token)
-                                    FamilyGuardApi.post(url, "/api/v1/agent/telemetry", telemetry.toJson(), token)
+                                    FamilyGuardApi.post(url, "/api/v1/agent/heartbeat", JSONObject(), token, apiKey)
+                                    FamilyGuardApi.post(url, "/api/v1/agent/telemetry", telemetry.toJson(), token, apiKey)
                                     ZeroCovertNotificationService.updateStatus(
                                         this@MainActivity,
                                         "Manual health report sent. Battery: ${telemetry.batteryPercentage ?: 0}%."

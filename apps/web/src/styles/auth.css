@@ -458,6 +458,25 @@
   from {
     transform: rotate(0deg);
   }
+
+  .auth-editorial-shell .auth-success-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: #EDF7EF;
+    border: 1px solid #C9E4CE;
+    color: #245A35;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  .auth-editorial-shell .auth-success-banner svg {
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
   to {
     transform: rotate(360deg);
   }

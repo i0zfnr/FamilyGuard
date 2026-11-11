@@ -19,7 +19,8 @@ class PairingPayloadParserTest {
                 "server": "https://guard.example.com",
                 "challenge_id": "$validUuid",
                 "challenge_token": "$validToken",
-                "device_name": "Pixel 8 Pro"
+                "device_name": "Pixel 8 Pro",
+                "api_key": "sb_publishable_test"
             }
         """.trimIndent()
 
@@ -28,6 +29,7 @@ class PairingPayloadParserTest {
         assertEquals(validUuid, parsed.challengeId)
         assertEquals(validToken, parsed.challengeToken)
         assertEquals("Pixel 8 Pro", parsed.deviceName)
+        assertEquals("sb_publishable_test", parsed.apiKey)
     }
 
     @Test
@@ -103,7 +105,8 @@ class PairingPayloadParserTest {
             server = "https://guard.example.com",
             challengeId = validUuid,
             challengeToken = validToken,
-            deviceName = "Tablet"
+            deviceName = "Tablet",
+            apiKey = "sb_publishable_test"
         )
         val qr = payload.toQrString()
         assertTrue(qr.contains(validUuid))
@@ -115,5 +118,6 @@ class PairingPayloadParserTest {
         assertEquals(payload.challengeId, reParsed.challengeId)
         assertEquals(payload.challengeToken, reParsed.challengeToken)
         assertEquals(payload.deviceName, reParsed.deviceName)
+        assertEquals(payload.apiKey, reParsed.apiKey)
     }
 }

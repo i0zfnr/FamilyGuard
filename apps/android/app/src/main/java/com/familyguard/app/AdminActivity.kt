@@ -30,27 +30,24 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
-import java.net.CookieManager
-import java.net.CookiePolicy
 import java.net.HttpURLConnection
 import java.net.URL
 
-private class AdminSession(origin: String) {
+private class AdminSession(origin: String, private val apiKey: String) {
     private val server = FamilyGuardApi.validateServer(origin)
-    private val cookies = CookieManager(null, CookiePolicy.ACCEPT_ORIGINAL_SERVER)
+    private var accessToken: String? = null
 
-    private fun call(path: String, body: JSONObject? = null, csrf: String? = null): JSONObject {
-        val url = URL(server + path)
+    private fun call(path: String, body: JSONObject? = null, useFunction: Boolean = true, token: String? = accessToken): JSONObject {
+        val base = if (useFunction) "$server/functions/v1/xennguard-api" else server
+        val url = URL(base + path)
         val connection = url.openConnection() as HttpURLConnection
         try {
             connection.instanceFollowRedirects = false
             connection.connectTimeout = 10000
             connection.readTimeout = 10000
             connection.setRequestProperty("Accept", "application/json")
-            cookies.get(url.toURI(), emptyMap()).forEach { (key, values) ->
-                if (key != null && values.isNotEmpty()) connection.setRequestProperty(key, values.joinToString("; "))
-            }
-            if (csrf != null) connection.setRequestProperty("X-CSRF-TOKEN", csrf)
+            connection.setRequestProperty("apikey", apiKey)
+            if (token != null) connection.setRequestProperty("Authorization", "Bearer $token")
             if (body != null) {
                 connection.requestMethod = "POST"
                 connection.doOutput = true
@@ -58,18 +55,19 @@ private class AdminSession(origin: String) {
                 connection.outputStream.use { it.write(body.toString().toByteArray(Charsets.UTF_8)) }
             }
             val status = connection.responseCode
-            cookies.put(url.toURI(), connection.headerFields.filterKeys { it != null })
+            val stream = if (status in 200..299) connection.inputStream else connection.errorStream
+            val response = stream?.bufferedReader()?.use { it.readText() }.orEmpty()
             if (status !in 200..299) throw IllegalStateException("Request failed (HTTP $status).")
-            return JSONObject(connection.inputStream.bufferedReader().use { it.readText() })
+            return if (response.isBlank()) JSONObject() else JSONObject(response)
         } finally {
             connection.disconnect()
         }
     }
 
     fun login(email: String, password: String): String {
-        val csrf = call("/api/v1/csrf").getString("csrf_token")
-        return call("/api/v1/auth/login", JSONObject().put("email", email).put("password", password), csrf)
-            .getJSONObject("user").getString("name")
+        val result = call("/auth/v1/token?grant_type=password", JSONObject().put("email", email).put("password", password), useFunction = false, token = null)
+        accessToken = result.getString("access_token")
+        return call("/api/v1/auth/me").getJSONObject("user").getString("name")
     }
 
     fun devices(): List<JSONObject> {
@@ -78,9 +76,8 @@ private class AdminSession(origin: String) {
     }
 
     fun logout() {
-        val csrf = call("/api/v1/csrf").getString("csrf_token")
-        call("/api/v1/auth/logout", JSONObject(), csrf)
-        cookies.cookieStore.removeAll()
+        call("/auth/v1/logout", JSONObject(), useFunction = false)
+        accessToken = null
     }
 }
 
@@ -90,6 +87,7 @@ class AdminActivity : ComponentActivity() {
         setContent {
             XennGuardTheme {
                 var server by remember { mutableStateOf("") }
+                var apiKey by remember { mutableStateOf("") }
                 var email by remember { mutableStateOf("") }
                 var password by remember { mutableStateOf("") }
                 var name by remember { mutableStateOf("") }
@@ -208,6 +206,19 @@ class AdminActivity : ComponentActivity() {
                                 )
 
                                 OutlinedTextField(
+                                    value = apiKey,
+                                    onValueChange = { apiKey = it },
+                                    label = { Text("Supabase publishable key") },
+                                    singleLine = true,
+                                    shape = RoundedCornerShape(10.dp),
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = XennPalette.BrandPrimary,
+                                        unfocusedBorderColor = XennPalette.BorderInput
+                                    )
+                                )
+
+                                OutlinedTextField(
                                     value = email,
                                     onValueChange = { email = it },
                                     label = { Text("Email Address") },
@@ -235,7 +246,7 @@ class AdminActivity : ComponentActivity() {
                                 )
 
                                 Button(
-                                    enabled = !busy && server.isNotBlank() && email.isNotBlank() && password.isNotBlank(),
+                                    enabled = !busy && server.isNotBlank() && apiKey.isNotBlank() && email.isNotBlank() && password.isNotBlank(),
                                     onClick = {
                                         val address = server.trim()
                                         val user = email.trim()
@@ -246,7 +257,7 @@ class AdminActivity : ComponentActivity() {
                                         scope.launch {
                                             try {
                                                 val result = withContext(Dispatchers.IO) {
-                                                    val client = AdminSession(address)
+                                                    val client = AdminSession(address, apiKey.trim())
                                                     client to client.login(user, secret)
                                                 }
                                                 session = result.first

@@ -1,11 +1,45 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { api, request, clearCsrfToken } from '../services/api'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { api, RequestError } from '../services/api'
 
-describe('API Service Client Test Suite', () => {
+const supabaseMocks = vi.hoisted(() => {
+  const profileQuery = {
+    select: vi.fn(),
+    eq: vi.fn(),
+    single: vi.fn(),
+  }
+  profileQuery.select.mockReturnValue(profileQuery)
+  profileQuery.eq.mockReturnValue(profileQuery)
+  return {
+    profileQuery,
+    client: {
+      auth: {
+        getSession: vi.fn(),
+        getUser: vi.fn(),
+        signInWithPassword: vi.fn(),
+        signUp: vi.fn(),
+        signOut: vi.fn(),
+      },
+      from: vi.fn(() => profileQuery),
+    },
+  }
+})
+
+vi.mock('../services/supabase', () => ({
+  getSupabaseClient: () => supabaseMocks.client,
+  getSupabaseFunctionUrl: () => 'https://project.supabase.co/functions/v1/xennguard-api',
+  getSupabasePublishableKey: () => 'sb_publishable_test_key',
+}))
+
+describe('Supabase API client', () => {
   const originalFetch = global.fetch
 
   beforeEach(() => {
-    clearCsrfToken()
+    vi.clearAllMocks()
+    supabaseMocks.client.auth.getSession.mockResolvedValue({ data: { session: null }, error: null })
+    supabaseMocks.profileQuery.single.mockResolvedValue({
+      data: { id: 'user-1', name: 'Alice', role: 'device_owner', mfa_enabled: false, created_at: '2026-01-01T00:00:00Z' },
+      error: null,
+    })
   })
 
   afterEach(() => {
@@ -13,151 +47,89 @@ describe('API Service Client Test Suite', () => {
     vi.restoreAllMocks()
   })
 
-  it('automatically acquires CSRF token before executing non-GET requests', async () => {
-    const mockCsrfToken = 'test-csrf-token-12345'
-    const fetchMock = vi.fn().mockImplementation((url: string, options?: RequestInit) => {
-      if (url === '/api/v1/csrf') {
-        return Promise.resolve(
-          new Response(JSON.stringify({ csrf_token: mockCsrfToken }), {
-            status: 200,
-            headers: { 'Content-Type': 'application/json' },
-          })
-        )
-      }
-      if (url === '/api/v1/auth/login') {
-        const headers = options?.headers as Record<string, string>
-        expect(headers['X-CSRF-TOKEN']).toBe(mockCsrfToken)
-        expect(headers['Content-Type']).toBe('application/json')
-        return Promise.resolve(
-          new Response(
-            JSON.stringify({ user: { id: 1, name: 'Alice', email: 'alice@example.com' } }),
-            { status: 200, headers: { 'Content-Type': 'application/json' } }
-          )
-        )
-      }
-      return Promise.reject(new Error(`Unhandled request: ${url}`))
-    })
+  it('signs in with Supabase Auth and loads the owner profile', async () => {
+    const authUser = { id: 'user-1', email: 'alice@example.com' }
+    supabaseMocks.client.auth.signInWithPassword.mockResolvedValue({ data: { user: authUser }, error: null })
 
-    global.fetch = fetchMock
+    const result = await api.auth.login({ email: authUser.email, password: 'securepassword123' })
 
-    const res = await api.auth.login({ email: 'alice@example.com', password: 'secretpassword123' })
-    expect(res.user.email).toBe('alice@example.com')
-    expect(fetchMock).toHaveBeenCalledWith('/api/v1/csrf', expect.anything())
-    expect(fetchMock).toHaveBeenCalledWith('/api/v1/auth/login', expect.anything())
+    expect(result.user).toMatchObject({ id: 'user-1', name: 'Alice', email: authUser.email, role: 'device_owner' })
+    expect(supabaseMocks.client.auth.signInWithPassword).toHaveBeenCalledWith({ email: authUser.email, password: 'securepassword123' })
   })
 
-  it('retries once if server responds with 419 CSRF Token Mismatch', async () => {
-    let csrfCount = 0
-    let postCount = 0
-
-    const fetchMock = vi.fn().mockImplementation((url: string) => {
-      if (url === '/api/v1/csrf') {
-        csrfCount++
-        return Promise.resolve(
-          new Response(JSON.stringify({ csrf_token: `token-${csrfCount}` }), {
-            status: 200,
-            headers: { 'Content-Type': 'application/json' },
-          })
-        )
-      }
-      if (url === '/api/v1/devices/1/revoke') {
-        postCount++
-        if (postCount === 1) {
-          return Promise.resolve(new Response(JSON.stringify({ message: 'CSRF token mismatch.' }), { status: 419 }))
-        }
-        return Promise.resolve(new Response(JSON.stringify({ message: 'Device access revoked.' }), { status: 200 }))
-      }
-      return Promise.reject(new Error(`Unhandled request: ${url}`))
+  it('does not reveal whether an email is already registered', async () => {
+    supabaseMocks.client.auth.signUp.mockResolvedValue({
+      data: { user: null, session: null },
+      error: { message: 'User already registered' },
     })
-
-    global.fetch = fetchMock
-
-    const res = await api.devices.revoke('1')
-    expect(res.message).toBe('Device access revoked.')
-    expect(csrfCount).toBe(2)
-    expect(postCount).toBe(2)
-  })
-
-  it('throws RequestError with consolidated validation error message on 422', async () => {
-    global.fetch = vi.fn().mockImplementation((url: string) => {
-      if (url === '/api/v1/csrf') {
-        return Promise.resolve(new Response(JSON.stringify({ csrf_token: 'valid-csrf' }), { status: 200 }))
-      }
-      return Promise.resolve(
-        new Response(
-          JSON.stringify({
-            message: 'The given data was invalid.',
-            errors: {
-              email: ['The email field is required.'],
-              password: ['The password must be at least 12 characters.'],
-            },
-          }),
-          { status: 422, headers: { 'Content-Type': 'application/json' } }
-        )
-      )
-    })
-
-    await expect(request('/auth/register', { method: 'POST' })).rejects.toThrow(
-      'The email field is required. The password must be at least 12 characters.'
-    )
-  })
-
-  it('does not submit credentials when the CSRF endpoint returns 502', async () => {
-    const fetchMock = vi.fn().mockResolvedValue(new Response('Bad Gateway', { status: 502 }))
-    global.fetch = fetchMock
 
     await expect(api.auth.register({
-      name: 'Test User',
-      email: 'test@example.com',
+      name: 'Alice',
+      email: 'alice@example.com',
       password: 'a long secure password',
       password_confirmation: 'a long secure password',
-    })).rejects.toThrow(/API server is unavailable \(HTTP 502\)/i)
-
-    expect(fetchMock).toHaveBeenCalledTimes(1)
-    expect(fetchMock).toHaveBeenCalledWith('/api/v1/csrf', expect.anything())
+    })).rejects.toThrow('Unable to create an account with these details. Try signing in or use another email address.')
   })
 
-  it('shows a clear service-unavailable message for a 502 health response', async () => {
-    global.fetch = vi.fn().mockResolvedValue(new Response('<html>Bad Gateway</html>', { status: 502 }))
+  it('asks new users to confirm their email when Supabase has no session yet', async () => {
+    supabaseMocks.client.auth.signUp.mockResolvedValue({
+      data: { user: { id: 'user-1', email: 'alice@example.com' }, session: null },
+      error: null,
+    })
 
-    await expect(api.health.check()).rejects.toThrow(/API server is unavailable \(HTTP 502\)/i)
+    const response = await api.auth.register({
+      name: 'Alice',
+      email: 'alice@example.com',
+      password: 'a long secure password',
+      password_confirmation: 'a long secure password',
+    })
+
+    expect(response.confirmationRequired).toBe(true)
+    expect(response.user).toBeUndefined()
   })
 
-  it('explains when the browser cannot connect to the API at all', async () => {
+  it('sends the user JWT and publishable key to protected functions', async () => {
+    supabaseMocks.client.auth.getSession.mockResolvedValue({
+      data: { session: { access_token: 'user-jwt' } },
+      error: null,
+    })
+    global.fetch = vi.fn().mockResolvedValue(new Response(JSON.stringify({ data: [] }), { status: 200 }))
+
+    await api.devices.list()
+
+    const [url, options] = vi.mocked(global.fetch).mock.calls[0]
+    const headers = new Headers(options?.headers)
+    expect(url).toBe('https://project.supabase.co/functions/v1/xennguard-api/api/v1/devices')
+    expect(headers.get('apikey')).toBe('sb_publishable_test_key')
+    expect(headers.get('Authorization')).toBe('Bearer user-jwt')
+  })
+
+  it('reports service failures without claiming signup succeeded', async () => {
+    global.fetch = vi.fn().mockResolvedValue(new Response('Bad Gateway', { status: 502 }))
+
+    await expect(api.health.check()).rejects.toMatchObject({
+      name: 'RequestError',
+      status: 502,
+      message: 'XennGuard’s data service is unavailable (HTTP 502). Try again later.',
+    })
+  })
+
+  it('explains when the service cannot be reached', async () => {
     global.fetch = vi.fn().mockRejectedValue(new TypeError('Failed to fetch'))
 
-    await expect(api.health.check()).rejects.toThrow(/Cannot reach XennGuard’s API server/i)
+    await expect(api.health.check()).rejects.toThrow(/Cannot reach XennGuard’s data service/i)
   })
 
-  it('correctly executes GET endpoints without fetching CSRF', async () => {
-    const fetchMock = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ data: [{ id: 'dev-1', device_name: 'Test Phone' }] }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      })
-    )
-    global.fetch = fetchMock
+  it('signs out through Supabase Auth', async () => {
+    supabaseMocks.client.auth.signOut.mockResolvedValue({ error: null })
 
-    const res = await api.devices.list()
-    expect(res.data).toHaveLength(1)
-    expect(fetchMock).toHaveBeenCalledTimes(1)
-    expect(fetchMock).toHaveBeenCalledWith(
-      '/api/v1/devices',
-      expect.objectContaining({
-        headers: expect.objectContaining({ Accept: 'application/json' }),
-      })
-    )
+    await expect(api.auth.logout()).resolves.toEqual({ message: 'Signed out.' })
+    expect(supabaseMocks.client.auth.signOut).toHaveBeenCalledOnce()
   })
 
-  it('correctly invokes health check endpoint', async () => {
-    global.fetch = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ status: 'ok' }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      })
-    )
-
-    const res = await api.health.check()
-    expect(res.status).toBe('ok')
+  it('keeps request errors typed for auth state handling', async () => {
+    const error = new RequestError('Unauthenticated.', 401)
+    expect(error.status).toBe(401)
+    expect(error.name).toBe('RequestError')
   })
 })

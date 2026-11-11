@@ -28,11 +28,13 @@ export function AuthPage({ onAuthenticated }: AuthPageProps) {
   const [confirmation, setConfirmation] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setError('')
+    setSuccess('')
     setLoading(true)
 
     try {
@@ -54,13 +56,19 @@ export function AuthPage({ onAuthenticated }: AuthPageProps) {
           password,
           password_confirmation: confirmation,
         })
-        onAuthenticated(res.user)
+        if (res.confirmationRequired) {
+          setSuccess(res.message || 'Check your email for a confirmation link before signing in.')
+        } else if (res.user) {
+          onAuthenticated(res.user)
+        }
       } else {
         const res = await api.auth.login({
           email,
           password,
         })
-        onAuthenticated(res.user)
+        if (res.user) {
+          onAuthenticated(res.user)
+        }
       }
     } catch (err) {
       if (err instanceof RequestError) {
@@ -177,6 +185,12 @@ export function AuthPage({ onAuthenticated }: AuthPageProps) {
               <div className="auth-error-banner" role="alert">
                 <WarningCircle size={18} weight="fill" className="auth-error-icon" aria-hidden="true" />
                 <span>{error}</span>
+              </div>
+            )}
+            {success && (
+              <div className="auth-success-banner" role="status">
+                <ShieldCheck size={18} weight="fill" aria-hidden="true" />
+                <span>{success}</span>
               </div>
             )}
 

@@ -10,12 +10,14 @@ namespace XennGuard.Agent.Crypto
         public string Server { get; set; }
         public string DeviceToken { get; set; }
         public string DeviceId { get; set; }
+        public string ApiKey { get; set; }
 
-        public DeviceCredential(string server, string deviceToken, string deviceId)
+        public DeviceCredential(string server, string deviceToken, string deviceId, string apiKey = null)
         {
             Server = server;
             DeviceToken = deviceToken;
             DeviceId = deviceId;
+            ApiKey = apiKey;
         }
     }
 
@@ -93,15 +95,15 @@ namespace XennGuard.Agent.Crypto
             }
         }
 
-        public void SaveCredentials(string server, string deviceToken, string deviceId)
+        public void SaveCredentials(string server, string deviceToken, string deviceId, string apiKey = null)
         {
             if (string.IsNullOrEmpty(server)) throw new ArgumentNullException("server");
             if (string.IsNullOrEmpty(deviceToken)) throw new ArgumentNullException("deviceToken");
             if (string.IsNullOrEmpty(deviceId)) throw new ArgumentNullException("deviceId");
 
             // Simple robust serialization
-            string raw = string.Format("{{\"server\":\"{0}\",\"device_token\":\"{1}\",\"device_id\":\"{2}\"}}",
-                EscapeJson(server), EscapeJson(deviceToken), EscapeJson(deviceId));
+            string raw = string.Format("{{\"server\":\"{0}\",\"device_token\":\"{1}\",\"device_id\":\"{2}\",\"api_key\":\"{3}\"}}",
+                EscapeJson(server), EscapeJson(deviceToken), EscapeJson(deviceId), EscapeJson(apiKey));
 
             byte[] plaintext = Encoding.UTF8.GetBytes(raw);
             byte[] ciphertext = ProtectedData.Protect(plaintext, DpapiEntropy, DataProtectionScope.CurrentUser);
@@ -122,9 +124,10 @@ namespace XennGuard.Agent.Crypto
                 string server = ExtractJsonField(json, "server");
                 string token = ExtractJsonField(json, "device_token");
                 string deviceId = ExtractJsonField(json, "device_id");
+                string apiKey = ExtractJsonField(json, "api_key");
 
                 if (string.IsNullOrEmpty(server) || string.IsNullOrEmpty(token)) return null;
-                return new DeviceCredential(server, token, deviceId);
+                return new DeviceCredential(server, token, deviceId, apiKey);
             }
             catch (Exception)
             {

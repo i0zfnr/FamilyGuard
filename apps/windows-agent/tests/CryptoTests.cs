@@ -79,14 +79,16 @@ namespace XennGuard.Agent.Tests
                 string server = "https://guard.familytest.org:8443";
                 string token = "f6e5d4c3b2a10987654321fedcba0987654321fedcba0987654321fedcba0987";
                 string deviceId = "42";
+                string apiKey = "sb_publishable_test_key";
 
-                store.SaveCredentials(server, token, deviceId);
+                store.SaveCredentials(server, token, deviceId, apiKey);
 
                 DeviceCredential loaded = store.LoadCredentials();
                 Assert("Loaded credential not null", loaded != null);
                 Assert("Server matches", loaded.Server == server);
                 Assert("DeviceToken matches", loaded.DeviceToken == token);
                 Assert("DeviceId matches", loaded.DeviceId == deviceId);
+                Assert("Supabase publishable key matches", loaded.ApiKey == apiKey);
             }
             finally
             {

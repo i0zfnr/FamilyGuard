@@ -202,3 +202,12 @@ Android debug build and unit tests, plus web build and lint, passed after the br
 - Windows agent: `run-tests.ps1` passed (47/47 tests).
 - Live Ryaze check: `/` returned HTTP 200; `/api/v1/health` and `/api/v1/csrf` returned HTTP 502. Therefore deployed signup/signin remain blocked by the host's PHP/API upstream. No real account was created, and no real user password was submitted.
 - Coverage limit: these are repository unit/feature tests, not exhaustive end-to-end tests of every screen or real device enrollment. Enrollment, MFA, recovery, and remote assistance remain unimplemented or disabled as noted above.
+
+## Supabase backend migration preparation (2026-11-12)
+
+- Added Supabase Postgres schema for profiles, devices, consent challenges, hashed device tokens, telemetry, and audit events. Enabled RLS with owner-only reads and restricted direct client writes; privileged enrollment/revocation use database functions.
+- Added `xennguard-api` Edge Function for authenticated owner operations, single-use signed device enrollment, device-token heartbeats, and validated telemetry writes. It verifies user access tokens server-side and never exposes the service-role key to clients.
+- Migrated web signup/signin to Supabase Auth and added the email-confirmation state. Migrated Android admin/device calls and Windows agent calls to the Supabase function route; QR payloads include only the publishable project key.
+- Validation: web tests 37/37 passed; lint/build passed. Android unit tests passed and debug APK built. Windows agent build passed; 48/48 tests passed. No Supabase project URL/key is configured, so hosted signup, database migration, Edge Function deployment, and live enrollment are not verified.
+- Rollback path: the existing Laravel API and routes remain in the repository and were not removed. The previous hosted app remains unchanged. To activate the new backend, configure Supabase, deploy the SQL migration and Edge Function, set the web build variables, and deploy the built app.
+- Limitations: existing Laravel accounts/data are not migrated; users will need to create Supabase accounts. Supabase's free tier can pause inactive projects. Set hosted Auth minimum password length to 12 and configure allowed site/redirect URLs before public use. Device enrollment requires the new function deployment and owner approval on the device.

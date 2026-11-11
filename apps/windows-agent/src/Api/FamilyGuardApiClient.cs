@@ -56,10 +56,11 @@ namespace XennGuard.Agent.Api
             string challengeToken,
             string deviceName,
             string publicKeyPem,
-            string signatureBase64)
+            string signatureBase64,
+            string apiKey = null)
         {
             string origin = ValidateServerOrigin(serverUrl);
-            string endpoint = origin + "/api/v1/devices/enroll";
+            string endpoint = (string.IsNullOrEmpty(apiKey) ? origin : origin + "/functions/v1/xennguard-api") + "/api/v1/devices/enroll";
 
             string jsonBody = string.Format(
                 "{{\"challenge_id\":\"{0}\",\"challenge_token\":\"{1}\",\"device_name\":\"{2}\",\"platform\":\"windows\",\"public_key\":\"{3}\",\"signature\":\"{4}\",\"owner_approved\":true}}",
@@ -70,7 +71,7 @@ namespace XennGuard.Agent.Api
                 EscapeJson(signatureBase64)
             );
 
-            string responseJson = PostJson(endpoint, jsonBody, null);
+            string responseJson = PostJson(endpoint, jsonBody, null, apiKey);
 
             string deviceId = ExtractJsonField(responseJson, "device_id");
             string deviceToken = ExtractJsonField(responseJson, "device_token");
@@ -89,13 +90,13 @@ namespace XennGuard.Agent.Api
             };
         }
 
-        public static bool SendHeartbeat(string serverUrl, string deviceToken)
+        public static bool SendHeartbeat(string serverUrl, string deviceToken, string apiKey = null)
         {
             string origin = ValidateServerOrigin(serverUrl);
-            string endpoint = origin + "/api/v1/agent/heartbeat";
+            string endpoint = (string.IsNullOrEmpty(apiKey) ? origin : origin + "/functions/v1/xennguard-api") + "/api/v1/agent/heartbeat";
             try
             {
-                PostJson(endpoint, "{}", deviceToken);
+                PostJson(endpoint, "{}", deviceToken, apiKey);
                 return true;
             }
             catch (Exception)
@@ -104,13 +105,13 @@ namespace XennGuard.Agent.Api
             }
         }
 
-        public static bool SendTelemetry(string serverUrl, string deviceToken, string telemetryJson)
+        public static bool SendTelemetry(string serverUrl, string deviceToken, string telemetryJson, string apiKey = null)
         {
             string origin = ValidateServerOrigin(serverUrl);
-            string endpoint = origin + "/api/v1/agent/telemetry";
+            string endpoint = (string.IsNullOrEmpty(apiKey) ? origin : origin + "/functions/v1/xennguard-api") + "/api/v1/agent/telemetry";
             try
             {
-                PostJson(endpoint, telemetryJson, deviceToken);
+                PostJson(endpoint, telemetryJson, deviceToken, apiKey);
                 return true;
             }
             catch (Exception)
@@ -119,7 +120,7 @@ namespace XennGuard.Agent.Api
             }
         }
 
-        private static string PostJson(string url, string jsonBody, string bearerToken)
+        private static string PostJson(string url, string jsonBody, string bearerToken, string apiKey = null)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = "POST";
@@ -135,6 +136,10 @@ namespace XennGuard.Agent.Api
             if (!string.IsNullOrEmpty(bearerToken))
             {
                 request.Headers["Authorization"] = "Bearer " + bearerToken;
+            }
+            if (!string.IsNullOrEmpty(apiKey))
+            {
+                request.Headers["apikey"] = apiKey;
             }
 
             byte[] bodyBytes = Encoding.UTF8.GetBytes(jsonBody);

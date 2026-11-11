@@ -84,14 +84,14 @@ namespace XennGuard.Agent.Agent
                 try
                 {
                     // 1. Send Heartbeat
-                    bool hbSuccess = FamilyGuardApiClient.SendHeartbeat(credential.Server, credential.DeviceToken);
+                    bool hbSuccess = FamilyGuardApiClient.SendHeartbeat(credential.Server, credential.DeviceToken, credential.ApiKey);
 
                     // 2. Collect Telemetry
                     WindowsTelemetryData telemetry = WindowsTelemetryCollector.Collect();
                     string telemetryJson = telemetry.ToJson();
 
                     // 3. Send Telemetry
-                    bool telemSuccess = FamilyGuardApiClient.SendTelemetry(credential.Server, credential.DeviceToken, telemetryJson);
+                    bool telemSuccess = FamilyGuardApiClient.SendTelemetry(credential.Server, credential.DeviceToken, telemetryJson, credential.ApiKey);
 
                     bool overallSuccess = hbSuccess && telemSuccess;
                     string timeStr = DateTime.Now.ToString("HH:mm:ss");

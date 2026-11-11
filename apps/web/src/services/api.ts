@@ -1,13 +1,13 @@
 import type {
   User,
   AuthResponse,
-  CsrfResponse,
   ApiErrorPayload,
   Device,
   PaginatedResponse,
   Telemetry,
   EnrollmentChallenge,
 } from '../types'
+import { getSupabaseClient, getSupabaseFunctionUrl, getSupabasePublishableKey } from './supabase'
 
 export class RequestError extends Error {
   readonly status: number
@@ -21,129 +21,168 @@ export class RequestError extends Error {
   }
 }
 
-let cachedCsrfToken: string | null = null
+function serviceSetupError(error: unknown): RequestError {
+  return new RequestError(
+    error instanceof Error ? error.message : 'XennGuard data service is not configured.',
+    503,
+  )
+}
 
-function responseErrorMessage(status: number, fallback?: string): string {
-  if (status >= 500) {
-    return `XennGuard's API server is unavailable (HTTP ${status}). Your request could not be confirmed. Try again later.`
+function safeSignupMessage(message: string): string {
+  if (/already registered|already exists|duplicate/i.test(message)) {
+    return 'Unable to create an account with these details. Try signing in or use another email address.'
   }
-  return fallback || 'Request failed.'
+  return message
 }
 
 async function fetchResponse(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
   try {
     return await fetch(input, init)
   } catch {
-    throw new RequestError('Cannot reach XennGuard’s API server. Check your connection and try again.', 0)
+    throw new RequestError('Cannot reach XennGuard’s data service. Check your connection and try again.', 0)
   }
 }
 
-export async function fetchCsrfToken(): Promise<string> {
-  const response = await fetchResponse('/api/v1/csrf', {
-    headers: { Accept: 'application/json' },
-  })
+async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
+  let client
+  let url: string
+  let publishableKey: string
+  try {
+    client = getSupabaseClient()
+    url = getSupabaseFunctionUrl()
+    publishableKey = getSupabasePublishableKey()
+  } catch (error) {
+    throw serviceSetupError(error)
+  }
+
+  const { data: { session } } = await client.auth.getSession()
+  const headers = new Headers(options.headers)
+  headers.set('Accept', 'application/json')
+  headers.set('apikey', publishableKey)
+  if (session?.access_token) {
+    headers.set('Authorization', `Bearer ${session.access_token}`)
+  }
+  if (options.body && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json')
+  }
+
+  const response = await fetchResponse(`${url}/api/v1${path}`, { ...options, headers })
   if (!response.ok) {
-    throw new RequestError(
-      responseErrorMessage(response.status, 'Could not initialize the secure session token.'),
-      response.status
-    )
-  }
-  const payload: CsrfResponse = await response.json()
-  cachedCsrfToken = payload.csrf_token
-  return payload.csrf_token
-}
-
-export function clearCsrfToken(): void {
-  cachedCsrfToken = null
-}
-
-export async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const method = (options.method || 'GET').toUpperCase()
-  const headers: Record<string, string> = {
-    Accept: 'application/json',
-    ...(options.headers as Record<string, string> | undefined),
-  }
-
-  if (method !== 'GET') {
-    if (!cachedCsrfToken) {
-      await fetchCsrfToken()
-    }
-    if (cachedCsrfToken) {
-      headers['X-CSRF-TOKEN'] = cachedCsrfToken
-    }
-    if (!headers['Content-Type'] && !(options.body instanceof FormData)) {
-      headers['Content-Type'] = 'application/json'
-    }
-  }
-
-  const response = await fetchResponse('/api/v1' + path, {
-    ...options,
-    headers,
-  })
-
-  if (!response.ok) {
-    // If CSRF token mismatch (419), invalidate cache and retry once
-    if (response.status === 419 && method !== 'GET') {
-      cachedCsrfToken = null
-      await fetchCsrfToken()
-      headers['X-CSRF-TOKEN'] = cachedCsrfToken!
-      const retryResponse = await fetchResponse('/api/v1' + path, {
-        ...options,
-        headers,
-      })
-      if (retryResponse.ok) {
-        return (await retryResponse.json()) as T
-      }
-    }
-
     const errorPayload: ApiErrorPayload = await response.json().catch(() => ({}))
     const validationMessage = errorPayload.errors
       ? Object.values(errorPayload.errors).flat().join(' ')
       : undefined
-    const errorMessage = responseErrorMessage(response.status, validationMessage || errorPayload.message)
-    throw new RequestError(errorMessage, response.status, errorPayload.errors)
+    throw new RequestError(
+      response.status >= 500
+        ? `XennGuard’s data service is unavailable (HTTP ${response.status}). Try again later.`
+        : validationMessage || errorPayload.message || 'Request failed.',
+      response.status,
+      errorPayload.errors,
+    )
   }
-
-  // Handle empty body responses (e.g. 204 No Content)
   if (response.status === 204) {
     return {} as T
   }
-
   return response.json() as Promise<T>
+}
+
+async function profileFor(user: { id: string; email?: string | null }): Promise<User> {
+  const client = getSupabaseClient()
+  const { data, error } = await client
+    .from('profiles')
+    .select('id, name, role, mfa_enabled, created_at')
+    .eq('id', user.id)
+    .single()
+  if (error || !data) {
+    throw new RequestError('Your profile is not ready. Try again later.', 503)
+  }
+  return {
+    id: data.id,
+    name: data.name,
+    email: user.email ?? '',
+    role: data.role,
+    mfa_enabled: data.mfa_enabled,
+    created_at: data.created_at,
+  }
 }
 
 export const api = {
   auth: {
-    me: () => request<{ user: User }>('/auth/me'),
-    login: (credentials: { email: string; password: string }) =>
-      request<AuthResponse>('/auth/login', {
-        method: 'POST',
-        body: JSON.stringify(credentials),
-      }),
-    register: (data: { name: string; email: string; password: string; password_confirmation: string }) =>
-      request<AuthResponse>('/auth/register', {
-        method: 'POST',
-        body: JSON.stringify(data),
-      }),
-    logout: async () => {
-      const res = await request<{ message: string }>('/auth/logout', { method: 'POST' })
-      clearCsrfToken()
-      return res
+    me: async (): Promise<{ user: User }> => {
+      let client
+      try {
+        client = getSupabaseClient()
+      } catch (error) {
+        throw serviceSetupError(error)
+      }
+      const { data, error } = await client.auth.getUser()
+      if (error || !data.user) {
+        throw new RequestError('Unauthenticated.', 401)
+      }
+      return { user: await profileFor(data.user) }
+    },
+    login: async (credentials: { email: string; password: string }): Promise<AuthResponse> => {
+      let client
+      try {
+        client = getSupabaseClient()
+      } catch (error) {
+        throw serviceSetupError(error)
+      }
+      const { data, error } = await client.auth.signInWithPassword(credentials)
+      if (error || !data.user) {
+        throw new RequestError('Email or password is incorrect.', 422)
+      }
+      return { user: await profileFor(data.user) }
+    },
+    register: async (input: { name: string; email: string; password: string; password_confirmation: string }): Promise<AuthResponse> => {
+      let client
+      try {
+        client = getSupabaseClient()
+      } catch (error) {
+        throw serviceSetupError(error)
+      }
+      const { data, error } = await client.auth.signUp({
+        email: input.email,
+        password: input.password,
+        options: { data: { name: input.name.trim() } },
+      })
+      if (error) {
+        throw new RequestError(safeSignupMessage(error.message), 422)
+      }
+      if (!data.user) {
+        throw new RequestError('Unable to create your account. Try again later.', 503)
+      }
+      if (!data.session) {
+        return {
+          confirmationRequired: true,
+          message: 'Check your email for a confirmation link before signing in.',
+        }
+      }
+      return { user: await profileFor(data.user) }
+    },
+    logout: async (): Promise<{ message: string }> => {
+      let client
+      try {
+        client = getSupabaseClient()
+      } catch (error) {
+        throw serviceSetupError(error)
+      }
+      const { error } = await client.auth.signOut()
+      if (error) {
+        throw new RequestError('Could not sign out. Try again.', 503)
+      }
+      return { message: 'Signed out.' }
     },
   },
   devices: {
     list: () => request<PaginatedResponse<Device>>('/devices'),
     get: (id: string) => request<{ device: Device }>(`/devices/${id}`),
-    revoke: (id: string) =>
-      request<{ message: string }>(`/devices/${id}/revoke`, { method: 'POST' }),
-    telemetry: (id: string) =>
-      request<PaginatedResponse<Telemetry>>(`/devices/${id}/telemetry`),
+    revoke: (id: string) => request<{ message: string }>(`/devices/${id}/revoke`, { method: 'POST' }),
+    telemetry: (id: string) => request<PaginatedResponse<Telemetry>>(`/devices/${id}/telemetry`),
   },
   challenges: {
-    create: () =>
-      request<EnrollmentChallenge>('/devices/enrollment-challenges', { method: 'POST' }),
-    revoke: (id: string) =>
-      request<{ message: string }>(`/devices/enrollment-challenges/${id}`, { method: 'DELETE' }),
+    create: () => request<EnrollmentChallenge>('/devices/enrollment-challenges', { method: 'POST' }),
+    revoke: (id: string) => request<{ message: string }>(`/devices/enrollment-challenges/${id}`, { method: 'DELETE' }),
   },
   health: {
     check: () => request<{ status: string }>('/health'),

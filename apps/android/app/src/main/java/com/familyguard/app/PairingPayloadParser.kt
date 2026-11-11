@@ -10,7 +10,8 @@ data class PairingPayload(
     val server: String,
     val challengeId: String,
     val challengeToken: String,
-    val deviceName: String? = null
+    val deviceName: String? = null,
+    val apiKey: String? = null
 ) {
     fun toQrString(): String {
         val json = JSONObject()
@@ -18,6 +19,7 @@ data class PairingPayload(
         json.put("challenge_id", challengeId)
         json.put("challenge_token", challengeToken)
         deviceName?.let { json.put("device_name", it) }
+        apiKey?.let { json.put("api_key", it) }
         return json.toString()
     }
 }
@@ -35,9 +37,10 @@ object PairingPayloadParser {
             val challengeId = json.optString("challenge_id").trim()
             val challengeToken = json.optString("challenge_token").trim()
             val deviceName = json.optString("device_name").takeIf { it.isNotBlank() }?.trim()
+            val apiKey = json.optString("api_key").takeIf { it.isNotBlank() }?.trim()
 
             validateFields(challengeId, challengeToken)
-            return PairingPayload(server, challengeId, challengeToken, deviceName)
+            return PairingPayload(server, challengeId, challengeToken, deviceName, apiKey)
         }
 
         if (trimmed.startsWith("xennguard://") || trimmed.startsWith("https://")) {
@@ -53,9 +56,10 @@ object PairingPayloadParser {
             val challengeToken = queryParams["challenge_token"]
                 ?: throw IllegalArgumentException("Missing challenge_token in pairing link.")
             val deviceName = queryParams["device_name"]?.takeIf { it.isNotBlank() }
+            val apiKey = queryParams["api_key"]?.takeIf { it.isNotBlank() }
 
             validateFields(challengeId, challengeToken)
-            return PairingPayload(server, challengeId, challengeToken, deviceName)
+            return PairingPayload(server, challengeId, challengeToken, deviceName, apiKey)
         }
 
         throw IllegalArgumentException("Unrecognized pairing payload. Must be valid JSON or xennguard:// URI.")

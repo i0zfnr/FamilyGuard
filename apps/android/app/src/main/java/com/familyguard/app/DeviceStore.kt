@@ -36,7 +36,7 @@ class DeviceStore(context: Context) {
         return Base64.encodeToString(signature.sign(), Base64.NO_WRAP)
     }
 
-    fun save(server: String, token: String, deviceId: String) {
+    fun save(server: String, token: String, deviceId: String, apiKey: String? = null) {
         if (!store.containsAlias(secretAlias)) {
             val generator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore")
             generator.init(KeyGenParameterSpec.Builder(secretAlias, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
@@ -46,18 +46,18 @@ class DeviceStore(context: Context) {
         val cipher = Cipher.getInstance("AES/GCM/NoPadding")
         cipher.init(Cipher.ENCRYPT_MODE, store.getKey(secretAlias, null))
         val encrypted = cipher.doFinal(token.toByteArray(Charsets.UTF_8))
-        check(prefs.edit().putString("server", server).putString("device_id", deviceId)
+        check(prefs.edit().putString("server", server).putString("device_id", deviceId).putString("api_key", apiKey)
             .putString("iv", Base64.encodeToString(cipher.iv, Base64.NO_WRAP))
             .putString("token", Base64.encodeToString(encrypted, Base64.NO_WRAP)).commit())
     }
 
-    fun credential(): Pair<String, String>? {
+    fun credential(): Triple<String, String, String?>? {
         val server = prefs.getString("server", null) ?: return null
         val encrypted = prefs.getString("token", null) ?: return null
         val iv = prefs.getString("iv", null) ?: return null
         val cipher = Cipher.getInstance("AES/GCM/NoPadding")
         cipher.init(Cipher.DECRYPT_MODE, store.getKey(secretAlias, null), GCMParameterSpec(128, Base64.decode(iv, Base64.NO_WRAP)))
-        return server to String(cipher.doFinal(Base64.decode(encrypted, Base64.NO_WRAP)), Charsets.UTF_8)
+        return Triple(server, String(cipher.doFinal(Base64.decode(encrypted, Base64.NO_WRAP)), Charsets.UTF_8), prefs.getString("api_key", null))
     }
 
     fun clear() {

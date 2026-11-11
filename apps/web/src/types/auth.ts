@@ -1,5 +1,5 @@
 export interface User {
-  id: number
+  id: string | number
   name: string
   email: string
   role?: string
@@ -8,7 +8,8 @@ export interface User {
 }
 
 export interface AuthResponse {
-  user: User
+  user?: User
+  confirmationRequired?: boolean
   message?: string
 }
 
