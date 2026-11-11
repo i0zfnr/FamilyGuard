@@ -32,6 +32,8 @@ Latest changes
 - DEVELOPMENT_PROGRESS.md records tested results and limitations.
 - Web tests 38/38, lint and production build passed. Build has large bundle advisory.
 - Android unit/build and Windows tests had passed before latest web-only redirect update.
+- Android follow-up: admin sign-in now preloads the XennGuard Supabase URL/public key, hides connection settings behind an optional row, and maps auth errors safely. Android tests and debug APK build passed on 2026-11-12. APK: apps/android/app/build/outputs/apk/debug/app-debug.apk.
+- Android limitations: this does not implement the two-tab QR scan flow. Current pairing remains web-issued challenge plus manual target entry. Target-origin QR, owner confirmation handshake, and remote screen control need separate implementation; Android must retain owner consent and visible OS indicators.
 
 Limitations
 - No account was created and real signup/signin is unverified. User must enter password and confirm email in their own browser. Production signup form was visually/structurally checked.

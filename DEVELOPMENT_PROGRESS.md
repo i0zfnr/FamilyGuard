@@ -107,6 +107,13 @@ Android debug build and unit tests, plus web build and lint, passed after the br
 - Web tests: 38 passed. Lint and production build passed. Build emits a large-chunk advisory. Android unit tests/build and Windows tests had passed before the email redirect-only web change. No device enrollment or real-device monitoring was tested.
 - Built web assets were copied into root `public/` for Ryaze. Pushed commit `9b6e7cb` to both `main` and `master`; Ryaze redeploy completed successfully. Production homepage and current bundle returned HTTP 200; bundle contains the Supabase project URL and email-confirmation redirect behavior. Production sign-in and confirmed signup remain unverified.
 - Limitations: service-role credentials stay in Supabase and were not added to repository. Public publishable key is bundled into client as intended. Device enrollment remains consent-gated; no covert monitoring. Supabase Auth email deliverability depends on configured SMTP and was not tested.
+
+## Android sign-in recovery (2026-11-12)
+
+- Android admin sign-in now defaults to the XennGuard Supabase URL and public publishable key. Advanced connection fields are hidden unless opened.
+- Replaced generic HTTP status errors with safe sign-in guidance. Invalid credentials tell users to check email/password and confirm email; account existence is not revealed. HTTP 422 explains the request was rejected without echoing backend details.
+- Verification: Android unit tests and debug APK build passed (41 tasks). No physical Pixel or Redmi was connected; live Android sign-in remains unverified.
+- The requested device-originated QR scan flow is still not implemented. Existing backend only supports owner-issued challenge then target-side manual entry. Full remote control is not available; Android requires target-owner approval and OS permission/visible indicators for any screen assistance.
 - The deployment remains a prototype. QR pairing, remote assistance and production device management are not implemented. No user account was created, and no device was enrolled.
 - Follow-up routing diagnosis: the public SPA root now returns HTTP 200 after configuring `index.html` before `index.php`; Ryaze's terminal can reach Laravel on port 8080 and `/api/v1/health` returns `{"status":"ok"}` there. The public `/api/v1/health` still returns Cloudflare HTTP 502 through the PHP/FastCGI route. Nginx proxying the public domain directly to terminal port 8080 also returned 502, so the web process is not exposed to Ryaze's public gateway by that route. Sign-in remains blocked pending a working public PHP/app upstream.
 

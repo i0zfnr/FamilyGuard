@@ -57,7 +57,14 @@ private class AdminSession(origin: String, private val apiKey: String) {
             val status = connection.responseCode
             val stream = if (status in 200..299) connection.inputStream else connection.errorStream
             val response = stream?.bufferedReader()?.use { it.readText() }.orEmpty()
-            if (status !in 200..299) throw IllegalStateException("Request failed (HTTP $status).")
+            if (status !in 200..299) {
+                val message = if (path.startsWith("/auth/v1/token")) {
+                    signInErrorMessage(status, response)
+                } else {
+                    "Request failed (HTTP $status)."
+                }
+                throw IllegalStateException(message)
+            }
             return if (response.isBlank()) JSONObject() else JSONObject(response)
         } finally {
             connection.disconnect()
@@ -86,8 +93,8 @@ class AdminActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             XennGuardTheme {
-                var server by remember { mutableStateOf("") }
-                var apiKey by remember { mutableStateOf("") }
+                var server by remember { mutableStateOf(SupabaseConfig.URL) }
+                var apiKey by remember { mutableStateOf(SupabaseConfig.PUBLISHABLE_KEY) }
                 var email by remember { mutableStateOf("") }
                 var password by remember { mutableStateOf("") }
                 var name by remember { mutableStateOf("") }
@@ -96,6 +103,7 @@ class AdminActivity : ComponentActivity() {
                 var busy by remember { mutableStateOf(false) }
                 var error by remember { mutableStateOf("") }
                 var successMessage by remember { mutableStateOf("") }
+                var showServiceSettings by remember { mutableStateOf(false) }
                 val scope = rememberCoroutineScope()
 
                 Column(
@@ -179,44 +187,50 @@ class AdminActivity : ComponentActivity() {
                                     }
                                     Column {
                                         Text(
-                                            "Administrator Sign In",
+                                        "Sign in to XennGuard",
                                             fontWeight = FontWeight.Bold,
                                             fontSize = 17.sp,
                                             color = XennPalette.TextPrimary
                                         )
                                         Text(
-                                            "Enter workspace master credentials",
+                                            "Use the account you created on xennguard.ryz.my.id",
                                             fontSize = 12.sp,
                                             color = XennPalette.TextMuted
                                         )
                                     }
                                 }
 
-                                OutlinedTextField(
-                                    value = server,
-                                    onValueChange = { server = it },
-                                    label = { Text("HTTPS Server Address") },
-                                    singleLine = true,
-                                    shape = RoundedCornerShape(10.dp),
-                                    modifier = Modifier.fillMaxWidth(),
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        focusedBorderColor = XennPalette.BrandPrimary,
-                                        unfocusedBorderColor = XennPalette.BorderInput
-                                    )
-                                )
+                                TextButton(onClick = { showServiceSettings = !showServiceSettings }) {
+                                    Text(if (showServiceSettings) "Hide connection settings" else "Connection settings")
+                                }
 
-                                OutlinedTextField(
-                                    value = apiKey,
-                                    onValueChange = { apiKey = it },
-                                    label = { Text("Supabase publishable key") },
-                                    singleLine = true,
-                                    shape = RoundedCornerShape(10.dp),
-                                    modifier = Modifier.fillMaxWidth(),
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        focusedBorderColor = XennPalette.BrandPrimary,
-                                        unfocusedBorderColor = XennPalette.BorderInput
+                                if (showServiceSettings) {
+                                    OutlinedTextField(
+                                        value = server,
+                                        onValueChange = { server = it },
+                                        label = { Text("Supabase project URL") },
+                                        singleLine = true,
+                                        shape = RoundedCornerShape(10.dp),
+                                        modifier = Modifier.fillMaxWidth(),
+                                        colors = OutlinedTextFieldDefaults.colors(
+                                            focusedBorderColor = XennPalette.BrandPrimary,
+                                            unfocusedBorderColor = XennPalette.BorderInput
+                                        )
                                     )
-                                )
+
+                                    OutlinedTextField(
+                                        value = apiKey,
+                                        onValueChange = { apiKey = it },
+                                        label = { Text("Supabase publishable key") },
+                                        singleLine = true,
+                                        shape = RoundedCornerShape(10.dp),
+                                        modifier = Modifier.fillMaxWidth(),
+                                        colors = OutlinedTextFieldDefaults.colors(
+                                            focusedBorderColor = XennPalette.BrandPrimary,
+                                            unfocusedBorderColor = XennPalette.BorderInput
+                                        )
+                                    )
+                                }
 
                                 OutlinedTextField(
                                     value = email,
