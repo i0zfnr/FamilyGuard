@@ -21,7 +21,7 @@ Repo
 - Existing branch master was six commits ahead before this increment; Ryaze project is set to branch MAIN.
 - User authorized commit and deploy. Push latest commit to both main and master if remote refs still align.
 - Ryaze project domain: https://xennguard.ryz.my.id
-- Live page returned HTTP 200 but still served old JavaScript bundle index-B_B0oz1i.js. Push/trigger deployment and verify current bundle.
+- Commit 9b6e7cb pushed to both main and master. Ryaze dashboard logs report `[SUCCESS] Deployment finished!`; production homepage and asset returned HTTP 200. Current bundle `/assets/index-DgHKmEZV.js` contains Supabase project URL and email confirmation redirect.
 
 Latest changes
 - Supabase auth/API client plus Authorization/apikey headers.
@@ -34,5 +34,5 @@ Latest changes
 - Android unit/build and Windows tests had passed before latest web-only redirect update.
 
 Limitations
-- No account was created and real signup/signin is unverified. User must enter password and confirm email in their own browser.
+- No account was created and real signup/signin is unverified. User must enter password and confirm email in their own browser. Production signup form was visually/structurally checked.
 - SMTP/email delivery not verified. Enrollment remains consent-gated; do not claim it is production ready.
